@@ -1,6 +1,6 @@
 # rail_lens
 
-A new Flutter application.
+Indian Railways mobile application for e-governance and transparency :application for stations all over India to provide functionality to upload station images by railway authorities for e-governance by ministry of Railways.
 
 ## Getting Started
 
