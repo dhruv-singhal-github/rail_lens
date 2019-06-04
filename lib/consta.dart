@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
 class colors {
 
-  static const  color1= "#e24c69";
-  static const  color2= "#2f2357";
+  static const  color1=Color(0XFFe24c69) ;
+  static const  color2= Color(0xFF2f2357);
 
 
 }
