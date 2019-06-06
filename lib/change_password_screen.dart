@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rail_lens/HomePage.dart';
 import 'consta.dart';
+var gconte=null;
 
 class ChangePasswordScreen extends StatelessWidget {
   Widget _showButton() {
@@ -24,7 +26,7 @@ class ChangePasswordScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext gconte) {
     double width = 500;
     double height = 500;
     return Center(
@@ -84,7 +86,8 @@ class ChangePasswordScreen extends StatelessWidget {
     );
   }
   void _validateAndSubmit() {
-    print('Wazzup');
+    Navigator.push(_gContext,MaterialPageRoute(builder: (context)=>HomePage())) ;
+
   }
 
   Widget _showTitle() {
