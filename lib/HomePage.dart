@@ -85,13 +85,16 @@ class _contentState extends State<content> {
                     ],
                   ),
                 )),
+            Align(
+                    alignment: Alignment.bottomCenter,
+                    child:
             Container(
                 width: double.infinity,
-                child: Center(
-                    child: Container(
+
+
                   color: Color(0x000000),
                   child: iconplate(),
-                ))),
+                )),
 
             Container(
 
@@ -103,13 +106,19 @@ class _contentState extends State<content> {
 }
 
 Widget iconplate() {
-  return Container(
+  return
+  Align(
 
 
+    alignment: Alignment.bottomCenter,
+    child:
+      Container(
+      alignment: Alignment.bottomCenter,
 
     padding: EdgeInsets.fromLTRB(0, 35, 0, 0),
     color: Color.fromRGBO(255, 255, 255, 1),
     child: Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,mainAxisSize: MainAxisSize.max,
+
       children: <Widget>[
         Row(
 
@@ -215,7 +224,7 @@ Widget iconplate() {
         ])
       ],
     ),
-  );
+  ));
 }
 
 Widget iconwdg(IconButton domain, String domainname) {

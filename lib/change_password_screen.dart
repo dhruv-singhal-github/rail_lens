@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rail_lens/HomePage.dart';
 import 'consta.dart';
-var gconte=null;
+var gconte;
 
 class ChangePasswordScreen extends StatelessWidget {
   Widget _showButton() {
@@ -86,7 +86,7 @@ class ChangePasswordScreen extends StatelessWidget {
     );
   }
   void _validateAndSubmit() {
-    Navigator.push(_gContext,MaterialPageRoute(builder: (context)=>HomePage())) ;
+    Navigator.push(gconte,MaterialPageRoute(builder: (context)=>HomePage())) ;
 
   }
 
