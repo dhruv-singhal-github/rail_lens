@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'consta.dart';
-import 'change_password_screen.dart';
-class LoginScreen extends StatelessWidget {
 
-  var _gContext;
-
-  Widget _showButton(){
+class ChangePasswordScreen extends StatelessWidget {
+  Widget _showButton() {
     return MaterialButton(
-      minWidth: 200,
+      minWidth: 210,
       height: 50,
       elevation: 5,
       highlightElevation: 8,
@@ -17,9 +14,9 @@ class LoginScreen extends StatelessWidget {
       ),
       onPressed: _validateAndSubmit,
       child: Text(
-        'Login',
+        'Change Password',
         style: TextStyle(
-          fontSize: 20,
+          fontSize: 16,
           color: Colors.white,
         ),
       ),
@@ -28,9 +25,8 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _gContext = context;
     double width = 500;
-    double height = 300;
+    double height = 500;
     return Center(
       child: Padding(
         padding: EdgeInsets.all(20),
@@ -40,8 +36,8 @@ class LoginScreen extends StatelessWidget {
           child: Material(
             elevation: 8,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(50),
+              borderRadius: BorderRadius.all(
+                Radius.circular(50),
               ),
             ),
             child: Padding(
@@ -49,11 +45,15 @@ class LoginScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
+                  _showTitle(),
+                  SizedBox(
+                    height: 5,
+                  ),
                   TextField(
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Username',
+                      labelText: 'Old Password',
                     ),
                   ), //TextField
                   TextField(
@@ -62,11 +62,19 @@ class LoginScreen extends StatelessWidget {
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
 //                      hintText: 'Enter Password',
-                      labelText: 'Password',
+                      labelText: 'New Password',
                     ), //InputDecoration
                   ), //TextField
+                  TextField(
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+//                      hintText: 'Enter Password',
+                      labelText: 'Confirm Password',
+                    ), //InputDecoration
+                  ),
                   _showButton(),
-                  
                 ],
               ),
             ),
@@ -75,9 +83,14 @@ class LoginScreen extends StatelessWidget {
       ),
     );
   }
-
   void _validateAndSubmit() {
     print('Wazzup');
-    Navigator.push(_gContext,MaterialPageRoute(builder: (context)=>ChangePasswordScreen())) ;
+  }
+
+  Widget _showTitle() {
+    return Text(
+      "Please change the default password",
+      style: TextStyle(fontSize: 20),
+    );
   }
 }
