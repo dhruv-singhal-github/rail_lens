@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:rail_lens/HomePage.dart';
 import 'consta.dart';
-var gconte=null;
+
+var _gContext;
 
 class ChangePasswordScreen extends StatelessWidget {
   Widget _showButton() {
@@ -10,7 +11,7 @@ class ChangePasswordScreen extends StatelessWidget {
       height: 50,
       elevation: 5,
       highlightElevation: 8,
-      color: Colors.blue,
+      color: consta.color1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18.0),
       ),
@@ -19,16 +20,17 @@ class ChangePasswordScreen extends StatelessWidget {
         'Change Password',
         style: TextStyle(
           fontSize: 16,
-          color: Colors.white,
+          color: consta.color3,
         ),
       ),
     );
   }
 
   @override
-  Widget build(BuildContext gconte) {
+  Widget build(BuildContext context) {
     double width = 500;
     double height = 500;
+    _gContext = context;
     return Center(
       child: Padding(
         padding: EdgeInsets.all(20),
@@ -52,7 +54,8 @@ class ChangePasswordScreen extends StatelessWidget {
                     height: 5,
                   ),
                   TextField(
-                    keyboardType: TextInputType.emailAddress,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Old Password',
@@ -85,9 +88,11 @@ class ChangePasswordScreen extends StatelessWidget {
       ),
     );
   }
-  void _validateAndSubmit() {
-    Navigator.push(_gContext,MaterialPageRoute(builder: (context)=>HomePage())) ;
 
+  void _validateAndSubmit() {
+    print('Wazzup');
+    Navigator.push(
+        _gContext, MaterialPageRoute(builder: (context) => HomePage()));
   }
 
   Widget _showTitle() {
