@@ -4,11 +4,20 @@ import 'package:http/http.dart';
 import 'dart:convert';
 import 'models/model.dart';
 
+//Singleton for receiving services
 class RailApi {
   final Client _client = Client();
   static const String _url = '172.16.XXX.XXX/raillens/';
   static const String _login = 'login';
   static const String _changePassword = 'changePassword';
+
+  static final RailApi _railApi = RailApi._internal();
+
+  factory RailApi(){
+    return _railApi;
+  }
+
+  RailApi._internal();
 
   Future<AuthorizationModel> login(String username, String password) async {
     AuthorizationModel authorizationModel = await _client
@@ -40,4 +49,6 @@ class RailApi {
     => response.stream.bytesToString().then((value)
     => print(value.toString()))).catchError((error) => print(error.toString()));
   }
+
 }
+

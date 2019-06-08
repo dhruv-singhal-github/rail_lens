@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: StreamBuilder(
-                  stream: Provider.of<LoginBloc>(context).authorizationStream,
+                stream: Provider.of<LoginBloc>(context).authorizationStream,
 //                stream: bloc.authorizationStream,
                 builder: (context, AsyncSnapshot<AuthorizationModel> snapshot) {
                   if (!snapshot.hasData)
@@ -37,17 +37,18 @@ class LoginScreen extends StatelessWidget {
                   else
                     return Center(
                       child: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: GestureDetector(
-                            onTapDown: (adf) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomePage()));
-                            },
-                            child: CircularProgressIndicator(),
-                          )),
+                        width: 100,
+                        height: 100,
+                        child: GestureDetector(
+                          onTapDown: (adf) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HomePage()));
+                          },
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
                     );
                 },
               ),
@@ -58,18 +59,9 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget plsDeleteThisFunction(
-      BuildContext context, AuthorizationModel authorizationModel) {
-    if (!authorizationModel.isDefault && authorizationModel.isAuthorized) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
-    }
-    return CircularProgressIndicator();
-  }
 }
 
 class LoginTextForm extends StatefulWidget {
-
   @override
   _LoginTextFormState createState() {
     return _LoginTextFormState();
