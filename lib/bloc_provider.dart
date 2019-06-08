@@ -1,10 +1,8 @@
-
 import 'package:flutter/material.dart';
 
-
-Type _getType<B>() => B;
-
 class Provider<B> extends InheritedWidget {
+  static Type _getType<I>() => I;
+
   final B bloc;
 
   const Provider({
@@ -18,21 +16,21 @@ class Provider<B> extends InheritedWidget {
     return bloc != oldWidget.bloc;
   }
 
-  static B of<B>(BuildContext context) {
-    final type = _getType<Provider<B>>();
-    final Provider<B> provider = context.inheritFromWidgetOfExactType(type);
+  static H of<H>(BuildContext context) {
+    final type = _getType<Provider<H>>();
+    final Provider<H> provider = context.inheritFromWidgetOfExactType(type);
     if(provider == null)
-      throw Exception('Provider was null!');
+      throw Exception('Provider was null! Ensure that you have a BlockProvider of the specified type in the ancestor tree of the widget');
     return provider.bloc;
   }
 }
 
-class BlockProvider<B> extends StatefulWidget {
+class BlocProvider<B> extends StatefulWidget {
   final void Function(BuildContext context, B bloc) onDispose;
   final B Function(BuildContext context, B bloc) builder;
   final Widget child;
 
-  BlockProvider({
+  BlocProvider({
     Key key,
     @required this.child,
     @required this.builder,
@@ -41,21 +39,19 @@ class BlockProvider<B> extends StatefulWidget {
 
 
   @override
-  _BlockProviderState createState() {
-    return _BlockProviderState();
+  _BlocProviderState<B> createState() {
+    return _BlocProviderState();
   }
 }
 
-class _BlockProviderState<B> extends State<BlockProvider<B>> {
+class _BlocProviderState<B> extends State<BlocProvider<B>> {
 
   B bloc;
 
   @override
   void initState() {
-    if(widget.builder != null){
-      print('Babez bloc has $bloc');
-      widget.builder(context, bloc);
-    }
+    if(widget.builder != null)
+      bloc = widget.builder(context, bloc);
     super.initState();
   }
 

@@ -20,17 +20,19 @@ class LoginBloc extends Object with Validator implements BaseBloc {
   Stream<String> get password =>
       _passwordController.stream.transform(passwordValidator);
 
-  Stream<bool> get submitCheck =>
-      Observable.combineLatest2(username, password, (u, p) {
-        print('submit check bish username was $u and password was $p');
-        return true;
+  Stream<List<String>> get _userPassStream =>
+      Observable.combineLatest2(username, password, (u, p){
+        print('$u and $p were submitted');
+        return [u,p];
       });
+
+  Stream<bool> get submitCheck =>
+      _userPassStream.map((data)=>true);
+
   Stream<AuthorizationModel> get authorizationStream =>
-      Observable.combineLatest2(username, password, (username, password) {
-        print('username was $username and password was $password');
-        return [username, password];
-//      }).asyncMap((pair)=>api.login(pair[0], pair[1]));
-      }).map((dummy){
+      _userPassStream
+//      .asyncMap((pair)=>api.login(pair[0], pair[1]));
+      .map((dummy){//TODO: Remove dummy data from here
         return new AuthorizationModel(true, false, ['DEL']);
       });
 
@@ -41,7 +43,6 @@ class LoginBloc extends Object with Validator implements BaseBloc {
   void dispose() {
     _usernameController.close();
     _passwordController.close();
-//    _authorizationController.close();
   }
 
 }

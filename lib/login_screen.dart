@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'HomePage.dart';
 import 'consta.dart';
 import 'change_password_screen.dart';
 import 'bloc_provider.dart';
@@ -9,7 +11,6 @@ import 'network.dart';
 class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var bloc = LoginBloc(RailApi());
     double width = 500;
     double height = 300;
     return Center(
@@ -28,21 +29,28 @@ class LoginScreen extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
               child: StreamBuilder(
-//                  stream: Provider.of<LoginBloc>(context).authorizationStream,
-                  stream: bloc.authorizationStream,
-                  builder:
-                      (context, AsyncSnapshot<AuthorizationModel> snapshot) {
-                    if (!snapshot.hasData)
-                      return LoginTextForm(bloc);
-                    else
-                      return Center(
-                        child: SizedBox(
+                  stream: Provider.of<LoginBloc>(context).authorizationStream,
+//                stream: bloc.authorizationStream,
+                builder: (context, AsyncSnapshot<AuthorizationModel> snapshot) {
+                  if (!snapshot.hasData)
+                    return LoginTextForm();
+                  else
+                    return Center(
+                      child: SizedBox(
                           width: 100,
                           height: 100,
-                          child: plsDeleteThisFunction(snapshot.data),
-                        ),
-                      );
-                  }),
+                          child: GestureDetector(
+                            onTapDown: (adf) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePage()));
+                            },
+                            child: CircularProgressIndicator(),
+                          )),
+                    );
+                },
+              ),
             ),
           ),
         ),
@@ -50,18 +58,17 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget plsDeleteThisFunction(AuthorizationModel authorizationModel) {
-    if(!authorizationModel.isDefault && authorizationModel.isAuthorized){
-      _
+  Widget plsDeleteThisFunction(
+      BuildContext context, AuthorizationModel authorizationModel) {
+    if (!authorizationModel.isDefault && authorizationModel.isAuthorized) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => HomePage()));
     }
     return CircularProgressIndicator();
   }
 }
 
 class LoginTextForm extends StatefulWidget {
-  final LoginBloc bloc;
-
-  LoginTextForm(this.bloc);
 
   @override
   _LoginTextFormState createState() {
@@ -82,12 +89,12 @@ class _LoginTextFormState extends State<LoginTextForm> {
 
   @override
   Widget build(BuildContext context) {
-//    final bloc = Provider.of<LoginBloc>(context);
+    final bloc = Provider.of<LoginBloc>(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         StreamBuilder<String>(
-          stream: widget.bloc.username,
+          stream: bloc.username,
           builder: (context, snapshot) => TextField(
                 controller: usernameEditController,
 //                onChanged: bloc.usernameChanged,
@@ -109,7 +116,7 @@ class _LoginTextFormState extends State<LoginTextForm> {
               ), //TextField
         ), //StreamBuilder
         StreamBuilder<String>(
-          stream: widget.bloc.password,
+          stream: bloc.password,
           builder: (context, snapshot) => TextField(
                 controller: passwordEditController,
 //                onChanged: bloc.passwordChanged,
@@ -130,12 +137,12 @@ class _LoginTextFormState extends State<LoginTextForm> {
                 ), //InputDecoration
               ), //TextField
         ), //StreamBuilder
-        _showButton(),
+        _showButton(context),
       ],
     );
   }
 
-  Widget _showButton() {
+  Widget _showButton(BuildContext context) {
     return MaterialButton(
       minWidth: 200,
       height: 50,
@@ -145,7 +152,7 @@ class _LoginTextFormState extends State<LoginTextForm> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(18.0),
       ),
-      onPressed: () => _validateFields(),
+      onPressed: () => _validateFields(context),
       child: Text(
         'Login',
         style: TextStyle(
@@ -156,15 +163,15 @@ class _LoginTextFormState extends State<LoginTextForm> {
     );
   }
 
-  void _validateFields() {
-//    final bloc = Provider.of<LoginBloc>(context);
+  void _validateFields(BuildContext context) {
+    final bloc = Provider.of<LoginBloc>(context);
     print('Wazzup');
-    widget.bloc.usernameChanged(usernameEditController.text);
-    widget.bloc.passwordChanged(passwordEditController.text);
+    bloc.usernameChanged(usernameEditController.text);
+    bloc.passwordChanged(passwordEditController.text);
   }
 
-  void _openChangePasswordScreen() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => ChangePasswordScreen()));
-  }
+//  void _openChangePasswordScreen() {
+//    Navigator.push(context,
+//        MaterialPageRoute(builder: (context) => ChangePasswordScreen()));
+//  }
 }
