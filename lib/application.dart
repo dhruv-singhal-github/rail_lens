@@ -24,13 +24,12 @@ class Application extends StatelessWidget {
   }
 }
 
-class ApplicationStateManager extends StatefulWidget{
+class ApplicationStateManager extends StatefulWidget {
   @override
-  ApplicationState createState()=> ApplicationState();
+  ApplicationState createState() => ApplicationState();
 }
 
-class ApplicationState extends State<ApplicationStateManager>{
-
+class ApplicationState extends State<ApplicationStateManager> {
   ApplicationBloc bloc;
   //TODO: Replace StreamBuilder with custom stream logic
   @override
@@ -38,13 +37,14 @@ class ApplicationState extends State<ApplicationStateManager>{
     return StreamBuilder(
       stream: Provider.of<ApplicationBloc>(context).isLoggedIn,
       builder: (context, AsyncSnapshot<bool> snapshot) {
-        if(!snapshot.hasData){
+        if (!snapshot.hasData) {
           return LoadingPage();
-        } else if(snapshot.data){
+        } else if (snapshot.data) {
           return showHomePage();
         }
         return showLoginPage();
-      },);
+      },
+    );
   }
 
   @override
@@ -64,15 +64,12 @@ class ApplicationState extends State<ApplicationStateManager>{
 
   Widget showLoginPage() {
     final page = BlocProvider<LoginBloc>(
-      builder: (_, bloc)=>bloc??LoginBloc(),
-      onDispose: (_, bloc)=> bloc?.dispose(),
+      builder: (_, bloc) => bloc ?? LoginBloc(),
+      onDispose: (_, bloc) => bloc?.dispose(),
       child: LoginScreen(),
     );
     return page;
   }
-
-
-
 }
 
 class LoadingPage extends StatelessWidget {
@@ -82,17 +79,27 @@ class LoadingPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("RailLens"),
         backgroundColor: consta.color1,
-        elevation: 0,actions: <Widget>[
-        IconButton(icon: Image.asset("assets/icons/logout.png",color: Color.fromRGBO(255, 255, 255, 1),), onPressed: null)
-      ],
+        elevation: 0,
+        actions: <Widget>[
+          IconButton(
+              icon: Image.asset(
+                "assets/icons/logout.png",
+                color: Color.fromRGBO(255, 255, 255, 1),
+              ),
+              onPressed: null)
+        ],
       ),
       body: Container(
         color: Color.fromRGBO(255, 255, 255, 1),
         child: Center(
-          child: CircularProgressIndicator(),
-        ),
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Text('Logging In'),
+            CircularProgressIndicator(),
+          ],
+        )),
       ),
     );
   }
-
 }

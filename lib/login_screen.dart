@@ -6,19 +6,19 @@ import 'change_password_screen.dart';
 import 'bloc_provider.dart';
 import 'application_bloc.dart';
 import 'models/model.dart';
-import 'network.dart';
+import 'debug_code.dart';
 
-enum UI_STATE { LOGIN, LOADING, LOGIN_REATTEMPT }
+enum _UI_STATE { LOGIN, LOADING, LOGIN_REATTEMPT }
 
 class LoginScreen extends StatefulWidget {
   @override
-  LoginPageState createState() => LoginPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class LoginPageState extends State<LoginScreen> {
+class _LoginPageState extends State<LoginScreen> {
   StreamSubscription<bool> _submitCheckSubscription;
   StreamSubscription<AuthorizationModel> _authorizationModelSubscription;
-  UI_STATE _state = UI_STATE.LOGIN;
+  _UI_STATE _state = _UI_STATE.LOGIN;
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +86,9 @@ class LoginPageState extends State<LoginScreen> {
     print('Submit check returned $isCredentialValid');
     if (isCredentialValid) {
       setState(() {
-        if (_state == UI_STATE.LOGIN || _state == UI_STATE.LOGIN_REATTEMPT)
-          _state = UI_STATE.LOADING;
-        else if (_state == UI_STATE.LOADING) {
+        if (_state == _UI_STATE.LOGIN || _state == _UI_STATE.LOGIN_REATTEMPT)
+          _state = _UI_STATE.LOADING;
+        else if (_state == _UI_STATE.LOADING) {
           print('Duplicate calls!');
           throw Exception('Duplicate values in onSubmit Stream');
         }
@@ -104,7 +104,7 @@ class LoginPageState extends State<LoginScreen> {
   }
 
   void _onAuthorizationModelData(AuthorizationModel model) {
-    print('Authorization model is  $model');
+    printAuthorizationModel(model);
     if (model.isAuthorized) {
       if (!model.isDefault) {
         print('Open up homepage');
@@ -113,6 +113,10 @@ class LoginPageState extends State<LoginScreen> {
 //      onDispose: (_, bloc)=> bloc?.dispose(),
 //      child: HomePageBloc(),
 //    );
+        //Save in database
+        LoginBloc bloc = Provider.of<LoginBloc>(context);
+        Provider.of<ApplicationBloc>(context)
+            .storeCredentials(bloc.lastUsername, bloc.lastPassword);
         final page = HomePage();
         _openPage(page);
       } else {
@@ -127,22 +131,25 @@ class LoginPageState extends State<LoginScreen> {
       }
     } else {
       print('Wrong username or password');
-      if (_state == UI_STATE.LOADING) {
+      if (_state == _UI_STATE.LOADING) {
         setState(() {
-          _state = UI_STATE.LOGIN_REATTEMPT;
+          _state = _UI_STATE.LOGIN_REATTEMPT;
         });
+      } else{
+        print('Currently in an invalid state!! state was supposed to be '
+            'UI_STATE.LOADING, it is $_state');
       }
     }
   }
 
-  _openPage(Widget page) {
+  void _openPage(Widget page) {
     Navigator.pushReplacement(this.context,
         MaterialPageRoute(builder: (context) {
       return page;
     }));
   }
 
-  _onAuthorizationError(Object error, StackTrace trace) {
+  void _onAuthorizationError(Object error, StackTrace trace) {
     print('Handle authorization error');
     print('Error is $error');
     print('Trace is ${trace.toString()}');
@@ -150,43 +157,44 @@ class LoginPageState extends State<LoginScreen> {
 
   Widget _uiSelector() {
     switch (_state) {
-      case UI_STATE.LOGIN:
-        return LoginTextForm();
-      case UI_STATE.LOADING:
+      case _UI_STATE.LOGIN:
+        return _LoginForm();
+      case _UI_STATE.LOADING:
         return CircularProgressIndicator();
-      case UI_STATE.LOGIN_REATTEMPT:
-        return LoginTextForm.error('Wrong Username or Password');
+      case _UI_STATE.LOGIN_REATTEMPT:
+        return _LoginForm.error();
       default:
-        print('Invalid state');
+        print('Invalid UI state');
         throw Exception('Invalid UI state');
     }
   }
 }
 
-class LoginTextForm extends StatefulWidget {
-  final String _errorMessage;
+class _LoginForm extends StatefulWidget {
+  final String errorMessage;
   final bool _showError;
 
   @override
-  _LoginTextFormState createState() {
-    return _LoginTextFormState();
+  _LoginFormState createState() {
+    return _LoginFormState();
   }
 
-  LoginTextForm()
+  _LoginForm()
       : _showError = false,
-        _errorMessage = '';
+        errorMessage = '';
 
-  LoginTextForm.error(this._errorMessage) : _showError = true;
+  _LoginForm.error({this.errorMessage = 'Wrong Username or Password'})
+      : _showError = true;
 }
 
-class _LoginTextFormState extends State<LoginTextForm> {
-  final usernameEditController = TextEditingController();
-  final passwordEditController = TextEditingController();
+class _LoginFormState extends State<_LoginForm> {
+  final _usernameEditController = TextEditingController();
+  final _passwordEditController = TextEditingController();
 
   @override
   void dispose() {
-    usernameEditController.dispose();
-    passwordEditController.dispose();
+    _usernameEditController.dispose();
+    _passwordEditController.dispose();
     super.dispose();
   }
 
@@ -206,44 +214,25 @@ class _LoginTextFormState extends State<LoginTextForm> {
         StreamBuilder<String>(
           stream: bloc.username,
           builder: (context, snapshot) => TextField(
-                controller: usernameEditController,
-//                onChanged: bloc.usernameChanged,
+                controller: _usernameEditController,
                 keyboardType: TextInputType.text,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: consta.color1, width: 10),
-//                        borderRadius: BorderRadius.all(Radius.circular(100))
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: consta.color1),
-                  ),
+                  border: OutlineInputBorder(),
                   labelText: 'Username',
                   errorText: snapshot.error,
-                  labelStyle: TextStyle(
-                    color: consta.color1,
-                  ),
                 ),
               ), //TextField
         ), //StreamBuilder
         StreamBuilder<String>(
           stream: bloc.password,
           builder: (context, snapshot) => TextField(
-                controller: passwordEditController,
-//                onChanged: bloc.passwordChanged,
+                controller: _passwordEditController,
                 keyboardType: TextInputType.text,
                 obscureText: true,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: consta.color1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: consta.color1),
-                  ),
+                  border: OutlineInputBorder(),
                   labelText: 'Password',
                   errorText: snapshot.error,
-                  labelStyle: TextStyle(
-                    color: consta.color1,
-                  ),
                 ), //InputDecoration
               ), //TextField
         ), //StreamBuilder
@@ -276,12 +265,12 @@ class _LoginTextFormState extends State<LoginTextForm> {
   void _validateFields(BuildContext context) {
     final bloc = Provider.of<LoginBloc>(context);
     print('Wazzup! Sending event in user/pass streams');
-    bloc.usernameChanged(usernameEditController.text);
-    bloc.passwordChanged(passwordEditController.text);
+    bloc.usernameChanged(_usernameEditController.text);
+    bloc.passwordChanged(_passwordEditController.text);
   }
 
   Widget _showErrorBox() {
-    return Text(widget._errorMessage);
+    return Text(widget.errorMessage);
   }
 
 //  void _openChangePasswordScreen() {

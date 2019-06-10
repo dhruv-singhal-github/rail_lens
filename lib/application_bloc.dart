@@ -19,6 +19,18 @@ class ApplicationBloc extends BaseBloc {
         return true;
       });
 
+  void storeCredentials(String username, String password) {
+    //TODO: Save credentials in base64(use plain text until login and change password are converted)
+  }
+
+  void storeUsername(String username){
+
+  }
+
+  void storePassword(String password){
+
+  }
+
   ApplicationBloc() {
     //Setup the database stream, so that isLoggedIn can return actual credentials
   }
@@ -33,7 +45,8 @@ class ApplicationBloc extends BaseBloc {
 class LoginBloc extends BaseBloc with Validator {
   final _usernameController = PublishSubject<String>();
   final _passwordController = PublishSubject<String>();
-//  var _authorizationStream = Stream.empty();
+  String _lastUsername = '';
+  String _lastPassword = '';
 
   final RailApi api = RailApi();
 
@@ -57,13 +70,19 @@ class LoginBloc extends BaseBloc with Validator {
 
   Stream<bool> get submitCheck => _userPassStream.map((data) => data[2]);
 
-  Stream<AuthorizationModel> get authorizationStream => _userPassStream
-      .where((list)=>list[2])
+  Stream<AuthorizationModel> get authorizationStream =>
+      Observable(_userPassStream.where((list) => list[2])).doOnData((dataList) {
+        _lastPassword = dataList[1];
+        _lastUsername = dataList[0];
+      })
 //      .asyncMap((pair)=>api.login(pair[0], pair[1]));
           .map((dummy) {
         //TODO: Remove dummy data from here
         return new AuthorizationModel(true, true, ['DEL']);
       });
+
+  String get lastUsername => _lastUsername;
+  String get lastPassword => _lastPassword;
 
   Function(String) get usernameChanged => _usernameController.sink.add;
   Function(String) get passwordChanged => _passwordController.sink.add;
@@ -80,18 +99,45 @@ class ChangePasswordBloc extends BaseBloc with Validator {
   final _confirmPasswordController = PublishSubject<String>();
   final _oldPasswordController = PublishSubject<String>();
 
+  String _lastPassword;
   final RailApi _api = RailApi();
 
   Stream<String> get newPassword =>
       _newPasswordController.stream.transform(passwordValidator);
-  Stream<bool> get confirmPassword =>
-      Observable.combineLatest2(newPassword, _confirmPasswordController.stream,
-          (newPass, confPass) {
-        if (newPass != confPass)
-          throw Exception('Passwords do not match');
-        else
-          return true;
+  Stream<List<Object>> get confirmPassword => Observable.zip3(
+          _newPasswordController.stream,
+          _confirmPasswordController.stream,
+          _oldPasswordController.stream, (newPass, confPass, oldPass) {
+            print('given passes are $oldPass, $newPass, $confPass');
+          return [oldPass, newPass, confPass];
+      }).transform(confPassValidator);
+
+  //TODO: Change so that it accesses username saved from the database
+  Stream<String> get usernameStream => Observable.just('abc');
+  Stream<bool> get validEntries =>
+      confirmPassword.map((list) => list[list.length - 1]);
+
+  Stream<AuthorizationModel> get authorizationStream =>
+      Observable.combineLatest2(
+              confirmPassword.where((list) => list[list.length - 1]),
+              usernameStream, (passList, username) {
+        passList = passList as List<Object>;
+        passList[passList.length - 1] = username;
+        print('Sending this parameter list -> $passList');
+        return passList;
+      })
+          //      .asyncMap((pair)=>api.login(pair[0], pair[1]));
+          .map((dummy) {
+        //TODO: Remove dummy data from here
+        return new AuthorizationModel(true, false, ['DEL']);
       });
+
+  String get lastPassword => _lastPassword;
+
+  Function(String) get oldPassChanged => _oldPasswordController.sink.add;
+  Function(String) get newPassChanged => _newPasswordController.sink.add;
+  Function(String) get confirmPassChanged =>
+      _confirmPasswordController.sink.add;
 
   @override
   void dispose() {
