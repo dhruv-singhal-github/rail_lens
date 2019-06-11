@@ -28,8 +28,10 @@ dependencies:
   rounded_floating_app_bar: 0.1.0
 
 dev_dependencies:
+  dotted_border: ^0.1.1
   flutter_test:
     sdk: flutter
+
 
 
 # For information on the generic Dart part of this file, see the
@@ -47,6 +49,7 @@ flutter:
   assets:
     - assets/icons/circ.png
     - assets/icons/face.png
+    - assets/icons/agra.jpg
     - assets/icons/food.png
     - assets/icons/gear.png
     - assets/icons/tube.png
