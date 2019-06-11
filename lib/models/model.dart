@@ -3,6 +3,8 @@ class ThumbnailDataModel {
   DateTime dateTime;
   int id;
   var thumbnail;
+
+  ThumbnailDataModel(this.dateTime, this.id, this.thumbnail);
 }
 
 const _isAuthorized = 'authorization';
