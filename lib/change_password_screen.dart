@@ -128,8 +128,8 @@ class _ChangePasswordPageState extends State<ChangePasswordScreen> {
       if (!model.isDefault) {
         //authorized and changed successfully
         print('Open up homepage');
-        ChangePasswordBloc bloc = Provider.of<ChangePasswordBloc>(context);
-        Provider.of<ApplicationBloc>(context).storePassword(bloc.lastPassword);
+        ChangePasswordBloc bloc = Provider.of<ChangePasswordBloc>(this.context);
+        Provider.of<ApplicationBloc>(this.context).storePassword(bloc.lastPassword);
         final page = HomePage();
         _openPage(page);
       } else {
