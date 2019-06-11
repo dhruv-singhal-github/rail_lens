@@ -99,11 +99,11 @@ class LoginBloc extends BaseBloc with Validator {
         _lastPassword = dataList[1];
         _lastUsername = dataList[0];
       })
-//      .asyncMap((pair)=>api.login(pair[0], pair[1]));
-          .map((dummy) {
-        //TODO: Remove dummy data from here
-        return new AuthorizationModel(true, true, ['DEL']);
-      });
+      .asyncMap((pair)=>api.login(pair[0], pair[1]));
+//          .map((dummy) {
+//        //TODO: Remove dummy data from here
+//        return new AuthorizationModel(true, true, ['DEL']);
+//      });
 
   String get lastUsername => _lastUsername;
   String get lastPassword => _lastPassword;
@@ -170,4 +170,6 @@ class ChangePasswordBloc extends BaseBloc with Validator {
     _newPasswordController.close();
     _confirmPasswordController.close();
   }
+
+
 }

@@ -18,8 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return   MaterialApp(
-        home: Scaffold(
+    return   Scaffold(
           appBar: AppBar(
             title: Text("RailLens"),
             backgroundColor: consta.color1,
@@ -37,7 +36,7 @@ class _HomePageState extends State<HomePage> {
             color: Color.fromRGBO(255, 255, 255, 1),
             child: content(),
           ),
-        ));
+        );
   }
 }
 

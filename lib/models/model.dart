@@ -8,7 +8,7 @@ class ThumbnailDataModel {
 }
 
 const _isAuthorized = 'authorization';
-const _isDefault = 'authorization';
+const _isDefault = 'isDefault';
 const _locationCodes = 'location_details';
 
 //JSON PODO

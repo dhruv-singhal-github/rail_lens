@@ -7,7 +7,7 @@ import 'models/model.dart';
 //Singleton for receiving services
 class RailApi {
   final Client _client = Client();
-  static const String _url = '172.16.XXX.XXX/raillens/';
+  static const String _url =  "http://172.16.21.96:8080/stationimages/rest/stationimages/";
   static const String _login = 'login';
   static const String _changePassword = 'changePassword';
   static const String _upload = 'uploadPics';
@@ -24,10 +24,30 @@ class RailApi {
   Future<AuthorizationModel> login(String username, String password) async {
     AuthorizationModel authorizationModel = await _client
         .post(Uri.parse(_url + _login),
-            headers: {'Content-type': 'application/json'},
-            body: json.encoder
-                .convert({'username': username, 'password': password}))
+            headers: {
+              'accept': 'application/json',
+              'Content-type': 'application/x-www-form-urlencoded'
+            },
+            //TODO: Fix possible security error
+            body: 'name=' + username + '&password=' + password)
         .then((response) => response.body)
+        .then((body) {
+          print('RESPONSE BODY ALERT! + $body');
+          return body;
+        })
+    .then((val){
+      if(val == 'true'){
+        return "authorization: true, isDefault: false, location_details: [DEL, STD]";
+      } else {
+        return """"{  
+        "employee": {
+      "name":       "sonoo",
+      "salary":      56000,
+      "married":    true
+      }
+    }  """;
+      }
+    })
         .then(json.decode)
         .then((json) => AuthorizationModel.fromJson(json));
     return authorizationModel;
