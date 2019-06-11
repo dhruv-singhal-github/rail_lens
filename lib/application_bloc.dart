@@ -1,6 +1,9 @@
 import 'dart:async';
-import 'package:rail_lens/validator.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'package:rail_lens/validator.dart';
+import 'consta.dart';
 import 'bloc_provider.dart';
 import 'models/model.dart';
 import 'network.dart';
@@ -10,25 +13,46 @@ class ApplicationBloc extends BaseBloc {
   final _databaseStreamController = StreamController<Object>();
   final RailApi _railApi = RailApi();
 
+  //WorkAround until db integration
+  String _cachedUsername;
+  String _cachedPassword;
+  List<String> _cachedStationList;
+
   //TODO: Replace with actual database call
-  Stream<Credentials> get credentialStream => Observable.timer(
-      Credentials("some random", "value lol"), Duration(milliseconds: 10));
-  Stream<bool> get isLoggedIn => credentialStream.map((credentials) {
-        if (credentials.username == 'some random' &&
-            credentials.password == 'value lol') return false;
-        return true;
-      });
+  Stream<Credentials> get credentialStream =>
+//      Observable.fromFuture(getCredentials());
+      Observable.timer(Credentials(_cachedUsername, _cachedPassword),
+          Duration(milliseconds: 10));
 
-  void storeCredentials(String username, String password) {
+  Stream<bool> get isLoggedIn =>
+      Observable.timer(false, Duration(milliseconds: 200));
+
+  Future<void> storeCredentials(String username, String password) async {
+    _cachedUsername = username;
+    _cachedPassword = password;
     //TODO: Save credentials in base64(use plain text until login and change password are converted)
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    await prefs.setString(consta.userKey, username);
+//    await prefs.setString(consta.passKey, password);
   }
 
-  void storeUsername(String username){
+//  Future<Credentials> getCredentials() async{
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String user =  prefs.getString(consta.userKey);
+//    String pass = prefs.getString(consta.passKey);
+//    return Future<Credentials>(()=>Credentials(user, pass));
+//  }
 
+  void storeStationList(List<String> list) {
+    _cachedStationList = list;
   }
 
-  void storePassword(String password){
+  void storeUsername(String username) {
+    _cachedUsername = username;
+  }
 
+  void storePassword(String password) {
+    _cachedPassword = password;
   }
 
   ApplicationBloc() {
@@ -108,8 +132,8 @@ class ChangePasswordBloc extends BaseBloc with Validator {
           _newPasswordController.stream,
           _confirmPasswordController.stream,
           _oldPasswordController.stream, (newPass, confPass, oldPass) {
-            print('given passes are $oldPass, $newPass, $confPass');
-          return [oldPass, newPass, confPass];
+        print('given passes are $oldPass, $newPass, $confPass');
+        return [oldPass, newPass, confPass];
       }).transform(confPassValidator);
 
   //TODO: Change so that it accesses username saved from the database

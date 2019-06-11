@@ -5,6 +5,7 @@ class consta {
   static const  color2= Color(0xFF2f2357);
   static const  color3= Colors.white;
 
-
+  static const userKey = 'SHRD_PRF_USERNAME';
+  static const passKey = 'SHRD_PRF_PASSWORD';
 }
 

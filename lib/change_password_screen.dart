@@ -38,27 +38,33 @@ class _ChangePasswordPageState extends State<ChangePasswordScreen> {
               onPressed: null)
         ],
       ),
-      resizeToAvoidBottomInset: false,
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Container(
-            width: width,
-            height: height,
-            child: Material(
-              elevation: 8,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(50),
+      resizeToAvoidBottomPadding: true,
+      body: ListView(
+
+        children: <Widget>[
+          SizedBox(height: 30,),
+          Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Container(
+                width: width,
+                height: height,
+                child: Material(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(50),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    child: _uiSelector(),
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                child: _uiSelector(),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -199,10 +205,13 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<ChangePasswordBloc>(context);
+    final double dividerSize = 25;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
+        SizedBox(height: dividerSize,),
         _showTitle(),
+        SizedBox(height: dividerSize,),
         widget._showError
             ? _showErrorBox()
             : Container(
@@ -210,7 +219,7 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
                 height: 0,
               ),
         SizedBox(
-          height: 5,
+          height: dividerSize,
         ),
         StreamBuilder<String>(
 //          stream: bloc.,TODO: Create old pass stream
@@ -225,6 +234,7 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
                 ),
               ),
         ), //TextField
+        SizedBox(height: dividerSize,),
         StreamBuilder<String>(
           stream: bloc.newPassword,
           builder: (_, snapshot) => TextField(
@@ -238,6 +248,7 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
                 ), //InputDecoration
               ),
         ), //TextField
+        SizedBox(height: dividerSize,),
         StreamBuilder(
           stream: bloc.confirmPassword,
           builder: (_, snapshot) => TextField(
@@ -252,7 +263,9 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
                 ), //InputDecoration
               ),
         ),
+        SizedBox(height: dividerSize*1.5,),
         _showButton(context),
+        SizedBox(height: dividerSize,)
       ],
     );
   }
@@ -269,7 +282,7 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
       ),
       onPressed: () => _validateAndSubmit(context),
       child: Text(
-        'Change Password',
+        'Save Password',
         style: TextStyle(
           fontSize: 16,
           color: consta.color3,
