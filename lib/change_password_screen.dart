@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:rail_lens/reusable_ui.dart';
 
 import 'HomePage.dart';
 import 'application_bloc.dart';
@@ -75,7 +76,7 @@ class _ChangePasswordPageState extends State<ChangePasswordScreen> {
       case _UI_STATE.CHANGE_FORM:
         return _ChangePasswordForm();
       case _UI_STATE.LOADING:
-        return CircularProgressIndicator();
+        return LoadingCircular();
       case _UI_STATE.CHANGE_FORM_REATTEMPT:
         return _ChangePasswordForm.error();
       default:

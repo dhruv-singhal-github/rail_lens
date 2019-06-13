@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rail_lens/reusable_ui.dart';
 import 'dart:async';
 import 'HomePage.dart';
 import 'consta.dart';
@@ -153,6 +154,14 @@ class _LoginPageState extends State<LoginScreen> {
     print('Handle authorization error');
     print('Error is $error');
     print('Trace is ${trace.toString()}');
+    setState(() {
+      if (_state == _UI_STATE.LOADING)
+        _state = _UI_STATE.LOGIN_REATTEMPT;
+      else if (_state == _UI_STATE.LOGIN_REATTEMPT || _state == _UI_STATE.LOGIN) {
+        print('Duplicate calls!');
+        throw Exception('Duplicate values in onAuthorize Stream');
+      }
+    });
   }
 
   Widget _uiSelector() {
@@ -160,7 +169,7 @@ class _LoginPageState extends State<LoginScreen> {
       case _UI_STATE.LOGIN:
         return _LoginForm();
       case _UI_STATE.LOADING:
-        return CircularProgressIndicator();
+        return LoadingCircular(message: 'Logging In');
       case _UI_STATE.LOGIN_REATTEMPT:
         return _LoginForm.error();
       default:
@@ -183,7 +192,7 @@ class _LoginForm extends StatefulWidget {
       : _showError = false,
         errorMessage = '';
 
-  _LoginForm.error({this.errorMessage = 'Wrong Username or Password'})
+  _LoginForm.error({this.errorMessage = 'Could not connect to our servers'})
       : _showError = true;
 }
 

@@ -4,6 +4,7 @@ import 'application_bloc.dart';
 import 'bloc_provider.dart';
 import 'consta.dart';
 import 'login_screen.dart';
+import 'reusable_ui.dart';
 
 void main() => runApp(new Application());
 
@@ -89,17 +90,7 @@ class LoadingPage extends StatelessWidget {
               onPressed: null)
         ],
       ),
-      body: Container(
-        color: Color.fromRGBO(255, 255, 255, 1),
-        child: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text('Logging In'),
-            CircularProgressIndicator(),
-          ],
-        )),
-      ),
+      body: LoadingCircular(message: 'Logging In',),
     );
   }
 }
