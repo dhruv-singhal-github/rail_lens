@@ -7,7 +7,8 @@ import 'models/model.dart';
 //Singleton for receiving services
 class RailApi {
   final Client _client = Client();
-  static const String _url =  "http://172.16.21.96:8080/stationimages/rest/stationimages/";
+  static const String _url =
+      "http://172.16.21.96:8080/stationimages/rest/stationimages/";
   static const String _login = 'login';
   static const String _changePassword = 'changePassword';
   static const String _upload = 'uploadPics';
@@ -30,24 +31,19 @@ class RailApi {
             },
             //TODO: Fix possible security error
             body: 'name=' + username + '&password=' + password)
+        .timeout(Duration(seconds: 2))
         .then((response) => response.body)
         .then((body) {
           print('RESPONSE BODY ALERT! + $body');
           return body;
         })
-    .then((val){
-      if(val == 'true'){
-        return "authorization: true, isDefault: false, location_details: [DEL, STD]";
-      } else {
-        return """"{  
-        "employee": {
-      "name":       "sonoo",
-      "salary":      56000,
-      "married":    true
-      }
-    }  """;
-      }
-    })
+        .then((val) {
+          if (val == 'true') {
+            return '"authorization": "true", "isDefault": "false", "locations": "[DEL, STD]"';
+          } else {
+            return '"authorization": "false", "isDefault": "false", "locations": "[DEL, STD]"';
+          }
+        })
         .then(json.decode)
         .then((json) => AuthorizationModel.fromJson(json));
     return authorizationModel;
