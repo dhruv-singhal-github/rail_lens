@@ -118,4 +118,3 @@ class RailApi {
     return Future<bool>(() => true);
   }
 }
-	
