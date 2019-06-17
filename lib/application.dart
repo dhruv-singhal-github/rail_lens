@@ -37,12 +37,13 @@ class ApplicationState extends State<ApplicationStateManager> {
     return StreamBuilder(
       stream: Provider.of<ApplicationBloc>(context).isLoggedIn,
       builder: (context, AsyncSnapshot<bool> snapshot) {
-        if (!snapshot.hasData) {
-          return LoadingPage();
-        } else if (snapshot.data) {
+//        if (!snapshot.hasData) {
+//          return LoadingPage();
+//        } else if (snapshot.data) {
+//          return showHomePage();
+//        }
+//        return showLoginPage();
           return showHomePage();
-        }
-        return showLoginPage();
       },
     );
   }

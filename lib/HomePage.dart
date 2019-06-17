@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:rail_lens/consta.dart';
 import 'package:rail_lens/sizeconfig.dart';
 import 'package:rail_lens/main.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
 import 'package:rail_lens/gallery.dart';
 import 'package:rail_lens/login_screen.dart';
 import 'package:rounded_floating_app_bar/rounded_floating_app_bar.dart';
-BuildContext context;
-var Context=null;
 
-void main() => runApp(HomePage());
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -115,7 +117,7 @@ class _contentState extends State<content> {
   }
 }
 
-class  iconplate extends StatelessWidget {
+class iconplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -140,8 +142,18 @@ class  iconplate extends StatelessWidget {
                               color: consta.color1,
                             ),
                             onPressed: () {
+
+
+
+
+
+
+
+
+
+
                               Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) => gallery("Station Facade", 44, 1)
+                                  builder: (context) => gallery("Station Facade", 74, 1)
                               ));
                             })
                         ,
@@ -155,7 +167,7 @@ class  iconplate extends StatelessWidget {
                             onPressed:() {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Circulating Area", 44, 2)
+                                      gallery("Circulating Area", 75, 2)
                               ));
                             }),
                         "Circulating Area"),
@@ -166,7 +178,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Illumination", 44, 1)
+                                      gallery("Illumination", 76, 1)
                               ));
                             }),
                         "Illumination"),
@@ -183,7 +195,7 @@ class  iconplate extends StatelessWidget {
                             onPressed:() {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Waiting Room", 44, 2)
+                                      gallery("Waiting Room", 77, 2)
                               ));
                             }),
                         "Waiting Room"),
@@ -196,7 +208,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Platform", 44, 1)
+                                      gallery("Platform", 78, 1)
                               ));
                             }),
                         "Platform"),
@@ -209,7 +221,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Refreshment Rooms", 44, 2)
+                                      gallery("Refreshment Rooms", 79, 2)
                               ));
                             }),
                         "Refreshment Rooms"),
@@ -224,7 +236,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Local Heritage", 44, 1)
+                                      gallery("Local Heritage", 80, 1)
                               ));
                             }),
                         "Local Heritage"),
@@ -237,7 +249,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Bridges and Escalators", 44, 2)
+                                      gallery("Bridges and Escalators", 81, 2)
                               ));
                             }),
                         "Bridges and Escalators"),
@@ -248,7 +260,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Lifts", 44, 1)
+                                      gallery("Lifts", 81, 1)
                               ));
                             }),
                         "Lifts"),
@@ -265,7 +277,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Information Displays", 44, 2)
+                                      gallery("Information Displays", 82, 2)
                               ));
                             }),
                         "Information Displays"),
@@ -278,7 +290,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Restrooms", 44, 1)
+                                      gallery("Restrooms", 83, 1)
                               ));
                             }),
                         "Restrooms"),
@@ -289,7 +301,7 @@ class  iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Others", 44, 2)
+                                      gallery("Others", 84, 2)
                               ));
                             }),
                         "Others"),
