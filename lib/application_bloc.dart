@@ -44,6 +44,12 @@ class ApplicationBloc extends BaseBloc {
     await prefs.setString(consta.passKey, password);
   }
 
+  Future<void> logout() async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.setString(consta.userKey, null);
+    await preferences.setString(consta.passKey, null);
+  }
+
   Future<Credentials> getCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user = prefs.getString(consta.userKey);

@@ -31,7 +31,7 @@ class RailApi {
             },
             //TODO: Fix possible security error
             body: 'name=' + username + '&password=' + password)
-        .timeout(Duration(seconds: 2))
+        .timeout(Duration(seconds: 10))
         .then((response) => response.body)
         .then((body) {
           print('RESPONSE BODY ALERT! + $body');

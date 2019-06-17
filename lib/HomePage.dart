@@ -10,6 +10,9 @@ import 'package:rail_lens/gallery.dart';
 import 'package:rail_lens/login_screen.dart';
 import 'package:rounded_floating_app_bar/rounded_floating_app_bar.dart';
 
+import 'application_bloc.dart';
+import 'bloc_provider.dart';
+
 
 
 class HomePage extends StatefulWidget {
@@ -31,7 +34,7 @@ class _HomePageState extends State<HomePage> {
                     "assets/icons/logout.png",
                     color: Color.fromRGBO(255, 255, 255, 1),
                   ),
-                  onPressed: null)
+                  onPressed: ()=>logout())
             ],
           ),
           body: Container(
@@ -39,6 +42,11 @@ class _HomePageState extends State<HomePage> {
             child: content(),
           ),
         );
+  }
+
+  void logout() {
+    ApplicationBloc bloc = Provider.of<ApplicationBloc>(this.context);
+    bloc.logout();
   }
 }
 
@@ -221,7 +229,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Refreshment Rooms", 79, 2)
+                                      gallery("Refreshment Rooms", 80, 2)
                               ));
                             }),
                         "Refreshment Rooms"),
@@ -236,7 +244,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Local Heritage", 80, 1)
+                                      gallery("Local Heritage", 79, 1)
                               ));
                             }),
                         "Local Heritage"),
@@ -290,7 +298,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Restrooms", 83, 1)
+                                      gallery("Restrooms", 84, 1)
                               ));
                             }),
                         "Restrooms"),
@@ -301,7 +309,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Others", 84, 2)
+                                      gallery("Others", 83, 2)
                               ));
                             }),
                         "Others"),

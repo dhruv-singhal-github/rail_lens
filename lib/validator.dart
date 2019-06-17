@@ -16,7 +16,7 @@ mixin Validator {
     if (passwordConditionChecker(pass)) {
       sink.add(pass);
     } else {
-      sink.addError("Password should be atleast 8 characters long");
+      sink.addError("Invalid Password");
     }
   });
 
@@ -43,11 +43,11 @@ mixin Validator {
 
   static bool usernameConditionChecker(String username) {
     //TODO: Protect against injection
-    return !username.toLowerCase().contains("&") && username.isNotEmpty;
+    return !username.contains("&") && username.isNotEmpty && !username.contains(':') ;
   }
 
   static bool passwordConditionChecker(String password) {
     //TODO: Protect against injection
-    return password.toLowerCase().contains("abc") || password.length >= 8;
+    return !password.contains(':') && password.isNotEmpty;
   }
 }

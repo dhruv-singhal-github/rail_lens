@@ -15,10 +15,13 @@ domainimage({this.imagename,this.sno,this.date});
 
 
   factory domainimage.fromJson(Map<String, dynamic> json) {
+    var date = json['photodate'] as String;
+    date = date.substring(0, date.indexOf(" "));
+    print('date is $date');
     return domainimage(
         imagename: json['imgname'],
         sno: json['sno'],
-        date: json['photodate']
+        date: date
     );
   }
 
