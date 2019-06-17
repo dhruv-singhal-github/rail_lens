@@ -42,10 +42,12 @@ mixin Validator {
       );
 
   static bool usernameConditionChecker(String username) {
-    return username.toLowerCase().contains("abc");
+    //TODO: Protect against injection
+    return !username.toLowerCase().contains("&") && username.isNotEmpty;
   }
 
   static bool passwordConditionChecker(String password) {
+    //TODO: Protect against injection
     return password.toLowerCase().contains("abc") || password.length >= 8;
   }
 }

@@ -1,5 +1,5 @@
 import 'dart:async';
-//import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:rail_lens/validator.dart';
@@ -20,28 +20,36 @@ class ApplicationBloc extends BaseBloc {
 
   //TODO: Replace with actual database call
   Stream<Credentials> get credentialStream =>
-//      Observable.fromFuture(getCredentials());
-      Observable.timer(Credentials(_cachedUsername, _cachedPassword),
-          Duration(milliseconds: 10));
+      Observable.fromFuture(getCredentials());
+//      Observable.timer(Credentials(_cachedUsername, _cachedPassword),
+//          Duration(milliseconds: 10));
 
   Stream<bool> get isLoggedIn =>
-      Observable.timer(false, Duration(milliseconds: 200));
+//      Observable.timer(false, Duration(seconds: 10));
+      credentialStream.map((credentials) {
+        if (credentials?.username != null && credentials?.password != null) {
+          print('Found Credentials!');
+          print('They are ${credentials.username} && ${credentials.password}');
+          return true;
+        }
+        return false;
+      });
 
   Future<void> storeCredentials(String username, String password) async {
     _cachedUsername = username;
     _cachedPassword = password;
     //TODO: Save credentials in base64(use plain text until login and change password are converted)
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    await prefs.setString(consta.userKey, username);
-//    await prefs.setString(consta.passKey, password);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(consta.userKey, username);
+    await prefs.setString(consta.passKey, password);
   }
 
-//  Future<Credentials> getCredentials() async{
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String user =  prefs.getString(consta.userKey);
-//    String pass = prefs.getString(consta.passKey);
-//    return Future<Credentials>(()=>Credentials(user, pass));
-//  }
+  Future<Credentials> getCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user = prefs.getString(consta.userKey);
+    String pass = prefs.getString(consta.passKey);
+    return Future<Credentials>(() => Credentials(user, pass));
+  }
 
   void storeStationList(List<String> list) {
     _cachedStationList = list;
@@ -98,8 +106,7 @@ class LoginBloc extends BaseBloc with Validator {
       Observable(_userPassStream.where((list) => list[2])).doOnData((dataList) {
         _lastPassword = dataList[1];
         _lastUsername = dataList[0];
-      })
-      .asyncMap((pair)=>api.login(pair[0], pair[1]));
+      }).asyncMap((pair) => api.login(pair[0], pair[1]));
 //          .map((dummy) {
 //        //TODO: Remove dummy data from here
 //        return new AuthorizationModel(true, true, ['DEL']);
@@ -170,6 +177,4 @@ class ChangePasswordBloc extends BaseBloc with Validator {
     _newPasswordController.close();
     _confirmPasswordController.close();
   }
-
-
 }
