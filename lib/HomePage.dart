@@ -45,8 +45,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   void logout() {
+    print('Logout pressed');
     ApplicationBloc bloc = Provider.of<ApplicationBloc>(this.context);
     bloc.logout();
+    final page = BlocProvider<LoginBloc>(
+      builder: (_, bloc) => bloc ?? LoginBloc(),
+      onDispose: (_, bloc) => bloc?.dispose(),
+      child: LoginScreen(),
+    );
+    Navigator.pushReplacement(this.context,
+        MaterialPageRoute(builder: (context) {
+          return page;
+        }));
+
   }
 }
 

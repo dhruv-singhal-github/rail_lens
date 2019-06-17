@@ -26,14 +26,14 @@ class ApplicationBloc extends BaseBloc {
 
   Stream<bool> get isLoggedIn =>
 //      Observable.timer(false, Duration(seconds: 10));
-      credentialStream.map((credentials) {
-        if (credentials?.username != null && credentials?.password != null) {
-          print('Found Credentials!');
-          print('They are ${credentials.username} && ${credentials.password}');
-          return true;
-        }
-        return false;
-      });
+  credentialStream.map((credentials) {
+    if (credentials?.username != null && credentials?.password != null) {
+      print('Found Credentials!');
+      print('They are ${credentials.username} && ${credentials.password}');
+      return true;
+    }
+    return false;
+  });
 
   Future<void> storeCredentials(String username, String password) async {
     _cachedUsername = username;
@@ -44,17 +44,17 @@ class ApplicationBloc extends BaseBloc {
     await prefs.setString(consta.passKey, password);
   }
 
-  Future<void> logout() async{
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.setString(consta.userKey, null);
-    await preferences.setString(consta.passKey, null);
-  }
-
   Future<Credentials> getCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user = prefs.getString(consta.userKey);
     String pass = prefs.getString(consta.passKey);
     return Future<Credentials>(() => Credentials(user, pass));
+  }
+
+  Future<void> logout() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(consta.userKey, null);
+    await prefs.setString(consta.passKey, null);
   }
 
   void storeStationList(List<String> list) {
@@ -69,7 +69,7 @@ class ApplicationBloc extends BaseBloc {
     _cachedPassword = password;
   }
 
-  ApplicationBloc() {
+  ApplicationBloc() {//TODO:Complete
     //Setup the database stream, so that isLoggedIn can return actual credentials
   }
 
@@ -96,15 +96,15 @@ class LoginBloc extends BaseBloc with Validator {
   //TODO: Yes this is ugly, please change
   Stream<List<Object>> get _userPassStream =>
       Observable.zip2(_usernameController.stream, _passwordController.stream,
-          (u, p) {
-        print('$u and $p were submitted');
-        return [
-          u,
-          p,
-          Validator.usernameConditionChecker(u) &&
-              Validator.passwordConditionChecker(p)
-        ];
-      });
+              (u, p) {
+            print('$u and $p were submitted');
+            return [
+              u,
+              p,
+              Validator.usernameConditionChecker(u) &&
+                  Validator.passwordConditionChecker(p)
+            ];
+          });
 
   Stream<bool> get submitCheck => _userPassStream.map((data) => data[2]);
 
@@ -142,32 +142,32 @@ class ChangePasswordBloc extends BaseBloc with Validator {
   Stream<String> get newPassword =>
       _newPasswordController.stream.transform(passwordValidator);
   Stream<List<Object>> get confirmPassword => Observable.zip3(
-          _newPasswordController.stream,
-          _confirmPasswordController.stream,
-          _oldPasswordController.stream, (newPass, confPass, oldPass) {
-        print('given passes are $oldPass, $newPass, $confPass');
-        return [oldPass, newPass, confPass];
-      }).transform(confPassValidator);
+      _newPasswordController.stream,
+      _confirmPasswordController.stream,
+      _oldPasswordController.stream, (newPass, confPass, oldPass) {
+    print('given passes are $oldPass, $newPass, $confPass');
+    return [oldPass, newPass, confPass];
+  }).transform(confPassValidator);
 
   //TODO: Change so that it accesses username saved from the database
-  Stream<String> get usernameStream => Observable.just('abc');
+  Stream<String> get usernameStream => Observable.just('a');
   Stream<bool> get validEntries =>
       confirmPassword.map((list) => list[list.length - 1]);
 
   Stream<AuthorizationModel> get authorizationStream =>
       Observable.combineLatest2(
-              confirmPassword.where((list) => list[list.length - 1]),
-              usernameStream, (passList, username) {
+          confirmPassword.where((list) => list[list.length - 1]),
+          usernameStream, (passList, username) {
         passList = passList as List<Object>;
         passList[passList.length - 1] = username;
         print('Sending this parameter list -> $passList');
         return passList;
       })
-          //      .asyncMap((pair)=>api.login(pair[0], pair[1]));
-          .map((dummy) {
-        //TODO: Remove dummy data from here
-        return new AuthorizationModel(true, false, ['DEL']);
-      });
+          .asyncMap((pair)=>_api.changePassword(pair[0], pair[1], pair[2]));
+//          .map((dummy) {
+//        //TODO: Remove dummy data from here
+//        return new AuthorizationModel(true, false, ['DEL']);
+//      });
 
   String get lastPassword => _lastPassword;
 
