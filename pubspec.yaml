@@ -65,6 +65,8 @@ flutter:
     - assets/icons/waitingroom.png
     - assets/icons/logout.png
     - assets/icons/search.png
+    - assets/icons/add.png
+
 
 
 

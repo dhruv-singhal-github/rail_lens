@@ -68,7 +68,9 @@ class gallery extends StatelessWidget {
               } else if (snapshot.connectionState == ConnectionState.waiting ||
                   snapshot.connectionState == ConnectionState.active) {
                 //checks if the response throws an error
-                return LoadingCircular(message: 'Loading Pictures...',);
+                return LoadingCircular(
+                  message: 'Loading Pictures...',
+                );
               } else if (snapshot.connectionState == ConnectionState.done) {
                 print('I have data');
                 print('There are ${snapshot.data.photos.length} photos');
@@ -97,21 +99,23 @@ class gallery extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
                         snapshot.data.photos.length >=
-                            1 //TODO: Change hardcoded values, someday...
+                                1
                             ? imagecontainer(
-                            ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
-                                snapshot.data.photos[0].imagename +
-                                "&thumb=y"),
-                            snapshot.data.photos[0].date)
-                            : imagecontainer((("assets/icons/info.png")), defaultDate),
+                                ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                                    snapshot.data.photos[0].imagename +
+                                    "&thumb=y"),
+                                snapshot.data.photos[0].date)
+                            : imagecontainer(
+                                (("assets/icons/info.png")), defaultDate),
                         snapshot.data.photos.length >=
-                                2 //TODO: Change hardcoded values, someday...
+                                2
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[1].imagename +
                                     "&thumb=y"),
-                            snapshot.data.photos[1].date)
-                            : imagecontainer((("assets/icons/info.png")), defaultDate)
+                                snapshot.data.photos[1].date)
+                            : imagecontainer(
+                                (("assets/icons/info.png")), defaultDate)
                       ],
                     ),
                     Row(
@@ -119,21 +123,23 @@ class gallery extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         snapshot.data.photos.length >=
-                                3 //TODO: Change hardcoded values, someday...
+                                3
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[2].imagename +
                                     "&thumb=y"),
-                            snapshot.data.photos[2].date)
-                            : imagecontainer((("assets/icons/info.png")), defaultDate),
+                                snapshot.data.photos[2].date)
+                            : imagecontainer(
+                                (("assets/icons/info.png")), defaultDate),
                         snapshot.data.photos.length >=
-                                4 //TODO: Change hardcoded values, someday...
+                                4
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[3].imagename +
                                     "&thumb=y"),
-                            snapshot.data.photos[3].date)
-                            : imagecontainer((("assets/icons/info.png")), defaultDate)
+                                snapshot.data.photos[3].date)
+                            : imagecontainer(
+                                (("assets/icons/info.png")), defaultDate)
                       ],
                     ),
                     Row(
@@ -141,21 +147,23 @@ class gallery extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         snapshot.data.photos.length >=
-                                5 //TODO: Change hardcoded values, someday...
+                                5
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[4].imagename +
                                     "&thumb=y"),
-                            snapshot.data.photos[4].date)
-                            : imagecontainer((("assets/icons/info.png")), defaultDate),
+                                snapshot.data.photos[4].date)
+                            : imagecontainer(
+                                (("assets/icons/info.png")), defaultDate),
                         snapshot.data.photos.length >=
-                                6 //TODO: Change hardcoded values, someday...
+                                6
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[5].imagename +
                                     "&thumb=y"),
-                            snapshot.data.photos[5].date)
-                            : imagecontainer((("assets/icons/info.png")), defaultDate)
+                                snapshot.data.photos[5].date)
+                            : imagecontainer(
+                                (("assets/icons/info.png")), defaultDate)
                       ],
                     )
                   ],
@@ -185,12 +193,27 @@ class gallery extends StatelessWidget {
         width: sizeconfig.blockSizeHorizontal * 35,
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          DottedBorder(
-            color: colour,
-            gap: 3,
-            strokeWidth: 2.5,
-            child: pic == "assets/icons/info.png"?Image.asset(pic):imagecheck(pic),
-          ),
+          Stack(children: [
+            DottedBorder(
+              color: colour,
+              gap: 3,
+              strokeWidth: 2.5,
+              child: pic == "assets/icons/info.png"
+                  ? Image.asset(pic)
+                  : imagecheck(pic),
+            ),
+            Positioned(
+                right: 0,
+                bottom: 0,
+                child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    height: sizeconfig.blockSizeVertical *9,
+                    width: sizeconfig.blockSizeHorizontal * 9,
+                    child: FloatingActionButton(
+                      onPressed: () {},child: const Icon(Icons.add_circle),
+                      backgroundColor: colour2,
+                    )))
+          ]),
           Container(
               child: Text(
             date,
