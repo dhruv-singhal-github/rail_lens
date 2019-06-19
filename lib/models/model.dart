@@ -1,3 +1,5 @@
+import 'domainimage.dart';
+
 const String _initId = 'initid';
 const String _subInitId = 'subinitid';
 const String _locId = 'locid';
@@ -111,5 +113,25 @@ class Station {
     var stnCode = json[_stationCode];
     var stnName = json[_stationName];
     return Station(stnCode, stnName);
+  }
+}
+
+const String _message = 'message';
+const String _success = 'success';
+const String _image = 'image';
+
+
+class ImageUploadResponse{
+  final String message;
+  final bool success;
+  final domainimage image;
+
+  ImageUploadResponse(this.image, this.success, this.message);
+
+  factory ImageUploadResponse.fromJson(Map json){
+    var mss = json[_message];
+    var img = domainimage.fromJson(json[_image]);
+    var scc = json[_success];
+    return ImageUploadResponse(img, scc, mss);
   }
 }

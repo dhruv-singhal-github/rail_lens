@@ -1,7 +1,10 @@
 import 'dart:async';
-import 'package:rxdart/rxdart.dart';
-import 'package:http/http.dart';
+import 'dart:io';
 import 'dart:convert';
+import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:meta/meta.dart';
+import 'package:path_provider/path_provider.dart';
 import 'models/model.dart';
 
 //Singleton for receiving services
@@ -14,7 +17,7 @@ class RailApi {
   static const String _upload = 'uploadimage';
   static const String _downloadImageList = 'stnimages';
 
-  static const Duration _timeOutWaitMilliSeconds = Duration(milliseconds: 2000);
+  static const Duration _timeOutDuration = Duration(milliseconds: 5000);
   static final RailApi _railApi = RailApi._internal();
 
   factory RailApi() {
@@ -28,20 +31,20 @@ class RailApi {
     print('Login Basic: ${base64.encode(utf8.encode('$username:$password'))}');
     AuthorizationModel authorizationModel = await _client
         .post(Uri.parse(_url + _login),
-        headers: {
-          'accept': 'application/json',
-          'Content-type': 'application/x-www-form-urlencoded',
-          'Authorization':
-          'Basic ${base64.encode(utf8.encode('$username:$password'))}',
-        },
-        //TODO: Fix possible security error
-        body: 'name=' + username + '&password=' + password)
-        .timeout(_timeOutWaitMilliSeconds)
+            headers: {
+              'accept': 'application/json',
+              'Content-type': 'application/x-www-form-urlencoded',
+              'Authorization':
+                  'Basic ${base64.encode(utf8.encode('$username:$password'))}',
+            },
+            //TODO: Fix possible security error
+            body: 'name=' + username + '&password=' + password)
+        .timeout(_timeOutDuration)
         .then((response) => response.body)
         .then((body) {
-      print('RESPONSE BODY ALERT! $body');
-      return body;
-    })
+          print('RESPONSE BODY ALERT! $body');
+          return body;
+        })
         .then(json.decode)
         .then((json) => AuthorizationModel.fromJson(json));
     return authorizationModel;
@@ -53,21 +56,21 @@ class RailApi {
         'Change pass Basic: ${base64.encode(utf8.encode('$username:$oldPassword'))}');
     AuthorizationModel authorizationModel = await _client
         .post(Uri.parse(_url + _changePassword),
-        headers: {
-          'accept': 'application/json',
-          'Content-type': 'application/x-www-form-urlencoded',
-          'Authorization':
-          'Basic ${base64.encode(utf8.encode('$username:$oldPassword'))}',
-        },
-        //TODO: Fix possible security error
-        body:
-        'name=$username&password=$oldPassword&newpassword=$newPassword')
-        .timeout(_timeOutWaitMilliSeconds)
+            headers: {
+              'accept': 'application/json',
+              'Content-type': 'application/x-www-form-urlencoded',
+              'Authorization':
+                  'Basic ${base64.encode(utf8.encode('$username:$oldPassword'))}',
+            },
+            //TODO: Fix possible security error
+            body:
+                'name=$username&password=$oldPassword&newpassword=$newPassword')
+        .timeout(_timeOutDuration)
         .then((response) => response.body)
         .then((body) {
-      print('RESPONSE BODY ALERT! $body');
-      return body;
-    })
+          print('RESPONSE BODY ALERT! $body');
+          return body;
+        })
         .then(json.decode)
         .then((json) => AuthorizationModel.fromJson(json));
     return authorizationModel;
@@ -86,35 +89,85 @@ class RailApi {
     var future = client
         .send(request)
         .then((response) => response.stream
-        .bytesToString()
-        .then((value) => print(value.toString())))
+            .bytesToString()
+            .then((value) => print(value.toString())))
         .catchError((error) => print(error.toString()));
   }
 
   Future<ImageList> fetchImageList(
-      String locid, String subinitid, Credentials creds) async {
+      String locId, String subInitId, Credentials cred) async {
     print('Fetch Image list Basic:' +
-        '${base64.encode(utf8.encode('${creds.username}:${creds.password}'))}');
+        '${base64.encode(utf8.encode('${cred.username}:${cred.password}'))}');
     ImageList imageList = await _client
-        .get(Uri.parse(_url + _downloadImageList+'/$locid/$subinitid'),
-      headers: {
-        'accept': 'application/json',
-        'Content-type': 'application/x-www-form-urlencoded',
-        'Authorization':
-        'Basic ${base64.encode(utf8.encode('${creds.username}:${creds.password}'))}',
-      },)
-        .timeout(_timeOutWaitMilliSeconds)
+        .get(
+          Uri.parse(_url + _downloadImageList + '/$locId/$subInitId'),
+          headers: {
+            'accept': 'application/json',
+            'Content-type': 'application/x-www-form-urlencoded',
+            'Authorization':
+                'Basic ${base64.encode(utf8.encode('${cred.username}:${cred.password}'))}',
+          },
+        )
+        .timeout(_timeOutDuration)
         .then((response) => response.body)
         .then((body) {
-      print('RESPONSE BODY ALERT! $body');
-      return body;
-    })
+          print('RESPONSE BODY ALERT! $body');
+          return body;
+        })
         .then(json.decode)
         .then((json) => ImageList.fromJson(json));
     return imageList;
   }
 
-  Future<bool> uploadImage(int stationCode, int imageId, Credentials cr) async {
-    return Future<bool>(() => true);
+  Future<Stream> uploadImage(
+      {@required Station station,
+      @required int subInitId,
+      @required int sno,
+      @required String photoDate,
+      @required Credentials cr,
+      @required File image}) async {
+    var filepath = await _setup_testing();
+    print(
+        'Upload Basic: ${base64.encode(utf8.encode('${cr.username}:${cr.username}'))}');
+    var request = new MultipartRequest('POST', Uri.parse(_url + _upload));
+
+    request.headers['Content-type'] = 'multipart/form-data';
+    request.headers['authorization'] =
+        'Basic ${base64.encode(utf8.encode('${cr.username}:${cr.password}'))}';
+    request.headers['accept'] = 'application/json';
+
+//    var filepath = image.path;
+    request.fields['stncode'] = station.stnCode;
+    request.fields['subinitid'] = subInitId.toString();
+    request.fields['sno'] = sno.toString();
+    request.fields['currprev'] = 1.toString();
+    request.fields['photodate'] = photoDate;
+    request.files.add(
+      await MultipartFile.fromPath('file', filepath,
+          filename: 'image.txt',
+          contentType: MediaType('image', 'jpeg')),
+    );
+
+    return await _client.send(request)
+    .timeout(_timeOutDuration)
+    .then((response){
+      print('Response code is ${response.statusCode}');
+      if(response.statusCode == 200){
+        print('Yay response code is 200');
+      }
+      return response.stream.transform(utf8.decoder);
+    }).catchError((error){
+      print('There was an error!');
+      print(error);
+    });
+
   }
+}
+
+Future<String> _setup_testing() async{
+  final directory = await getApplicationDocumentsDirectory();
+//  final file = File('${directory.path}/image.txt');
+//  file.writeAsStringSync('testing lol');
+  print('returning from setup');
+  return '${directory.path}/image.txt';
 }
