@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'consta.dart';
 
@@ -32,4 +34,31 @@ class LoadingCircular extends StatelessWidget {
       ),
     );
   }
+}
+
+class ChangeImageConfirmation extends StatelessWidget{
+  final File prevImage;
+  final File newImage;
+
+  const ChangeImageConfirmation({Key key, this.prevImage, this.newImage}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Image.file(prevImage),
+          SizedBox(
+            width: 100,
+            height: 100,
+            child: Icon(Icons.arrow_forward),
+          ),
+          Image.file(newImage),
+        ],
+      ),
+    );
+  }
+
+
 }
