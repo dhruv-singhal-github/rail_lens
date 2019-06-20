@@ -126,7 +126,7 @@ class RailApi {
       @required String photoDate,
       @required Credentials cr,
       @required File image}) async {
-    var filepath = await _setup_testing();
+
     print(
         'Upload Basic: ${base64.encode(utf8.encode('${cr.username}:${cr.username}'))}');
     var request = new MultipartRequest('POST', Uri.parse(_url + _upload));
@@ -136,6 +136,7 @@ class RailApi {
         'Basic ${base64.encode(utf8.encode('${cr.username}:${cr.password}'))}';
     request.headers['accept'] = 'application/json';
 
+    var filepath = await _setup_testing();
 //    var filepath = image.path;
     request.fields['stncode'] = station.stnCode;
     request.fields['subinitid'] = subInitId.toString();
@@ -147,6 +148,7 @@ class RailApi {
           filename: 'image.txt',
           contentType: MediaType('image', 'jpeg')),
     );
+
 
     return await _client.send(request)
     .timeout(_timeOutDuration)
