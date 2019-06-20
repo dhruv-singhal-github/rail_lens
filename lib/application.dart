@@ -84,6 +84,8 @@ class ApplicationState extends State<ApplicationStateManager> {
     }
   }
 
+  //TODO: REPLACE ALL COPIES OF THIS METHOD WITH mixin?interface?
+  //COPIES IN login_screen etc
   void _openPage(Widget page) {
     Navigator.pushReplacement(this.context,
         MaterialPageRoute(builder: (context) {

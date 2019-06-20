@@ -170,23 +170,22 @@ class ChangePasswordBloc extends BaseBloc with Validator {
       }).transform(confPassValidator);
 
   //TODO: Change so that it accesses username saved from the database
-  Stream<String> get usernameStream => Observable.just('a');
+  String _username = 'a';
   Stream<bool> get validEntries =>
       confirmPassword.map((list) => list[list.length - 1]);
 
   Stream<AuthorizationModel> get authorizationStream =>
-      Observable.combineLatest2(
-          confirmPassword.where((list) => list[list.length - 1]),
-          usernameStream, (passList, username) {
-        passList = passList as List<Object>;
-        passList[passList.length - 1] = username;
-        print('Sending this parameter list -> $passList');
-        return passList;
-      }).asyncMap((pair) => _api.changePassword(pair[0], pair[1], pair[2]));
-//          .map((dummy) {
-//        //TODO: Remove dummy data from here
-//        return new AuthorizationModel(true, false, ['DEL']);
-//      });
+      confirmPassword.asyncMap<Map<String,String>>((passList) {
+        passList = passList;
+        var credMap = Map<String, String>();
+        credMap['username'] = _username;
+        credMap['oldpass'] = passList[0];
+        credMap['newpass'] = passList[1];
+        print('Sending this parameter map -> $credMap');
+        return credMap;
+      }).asyncMap<AuthorizationModel>((credMap) {
+        return _api.changePassword(credMap['username'], credMap['oldpass'], credMap['newpass']);
+      });
 
   String get lastPassword => _lastPassword;
 

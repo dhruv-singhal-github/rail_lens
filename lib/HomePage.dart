@@ -7,6 +7,7 @@ import 'package:rail_lens/login_screen.dart';
 
 import 'application_bloc.dart';
 import 'bloc_provider.dart';
+import 'change_password_screen.dart';
 import 'models/model.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,11 +25,26 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         actions: <Widget>[
           IconButton(
-              icon: Image.asset(
-                "assets/icons/logout.png",
-                color: Color.fromRGBO(255, 255, 255, 1),
-              ),
-              onPressed: () => logout())
+            icon: Image.asset(
+              "assets/icons/logout.png",
+              color: Color.fromRGBO(255, 255, 255, 1),
+            ),
+            onPressed: () => logout(),
+          ),
+          GestureDetector(
+            onTapDown: (_details) {
+              final page = BlocProvider<ChangePasswordBloc>(
+                builder: (_, bloc) => bloc ?? ChangePasswordBloc(),
+                onDispose: (_, bloc) => bloc?.dispose(),
+                child: ChangePasswordScreen(mandatory: false,),
+              );
+              Navigator.push(this.context,
+                  MaterialPageRoute(builder: (context) {
+                    return page;
+                  }));
+            },
+            child: Text('Change Password'),
+          )
         ],
       ),
       body: Container(
@@ -37,6 +53,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
 
   void logout() {
     print('Logout pressed');

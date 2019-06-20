@@ -12,6 +12,11 @@ import 'models/model.dart';
 enum _UI_STATE { CHANGE_FORM, LOADING, CHANGE_FORM_REATTEMPT }
 
 class ChangePasswordScreen extends StatefulWidget {
+  final bool mandatory;
+
+  const ChangePasswordScreen({Key key, @required this.mandatory})
+      : super(key: key);
+
   @override
   _ChangePasswordPageState createState() => _ChangePasswordPageState();
 }
@@ -41,9 +46,10 @@ class _ChangePasswordPageState extends State<ChangePasswordScreen> {
       ),
       resizeToAvoidBottomPadding: true,
       body: ListView(
-
         children: <Widget>[
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           Center(
             child: Padding(
               padding: EdgeInsets.all(20),
@@ -125,12 +131,18 @@ class _ChangePasswordPageState extends State<ChangePasswordScreen> {
 
   void _onAuthorizationModelData(AuthorizationModel model) {
     printAuthorizationModel(model);
+    if (model == null) {
+      _onAuthorizationError(
+          'Null AuthorizationModel', StackTrace.fromString('Not Available'));
+      return;
+    }
     if (model.isAuthorized) {
       if (!model.isDefault) {
         //authorized and changed successfully
         print('Open up homepage');
         ChangePasswordBloc bloc = Provider.of<ChangePasswordBloc>(this.context);
-        Provider.of<ApplicationBloc>(this.context).storePassword(bloc.lastPassword);
+        Provider.of<ApplicationBloc>(this.context)
+            .storePassword(bloc.lastPassword);
         final page = HomePage();
         _openPage(page);
       } else {
@@ -161,16 +173,31 @@ class _ChangePasswordPageState extends State<ChangePasswordScreen> {
   }
 
   void _onAuthorizationError(Object error, StackTrace trace) {
-    print('Handle onSubmitCheck Error');
+    print('Handle onAuthorization Error');
     print('Error is $error');
     print('Trace is ${trace.toString()}');
+    setState(() {
+      if (_state == _UI_STATE.LOADING)
+        _state = _UI_STATE.CHANGE_FORM_REATTEMPT;
+      else if (_state == _UI_STATE.CHANGE_FORM_REATTEMPT ||
+          _state == _UI_STATE.CHANGE_FORM) {
+        print('Duplicate calls!');
+        throw Exception(
+            'Duplicate values in onAuthorize Stream in ChangePassword');
+      }
+    });
   }
 
   void _openPage(Widget page) {
-    Navigator.pushReplacement(this.context,
-        MaterialPageRoute(builder: (context) {
-      return page;
-    }));
+    if (widget.mandatory)
+      Navigator.pushReplacement(this.context,
+          MaterialPageRoute(builder: (context) {
+        return page;
+      }));
+    else
+      Navigator.pop(
+        this.context,
+      );
   }
 }
 
@@ -210,9 +237,13 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        SizedBox(height: dividerSize,),
+        SizedBox(
+          height: dividerSize,
+        ),
         _showTitle(),
-        SizedBox(height: dividerSize,),
+        SizedBox(
+          height: dividerSize,
+        ),
         widget._showError
             ? _showErrorBox()
             : Container(
@@ -235,7 +266,9 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
                 ),
               ),
         ), //TextField
-        SizedBox(height: dividerSize,),
+        SizedBox(
+          height: dividerSize,
+        ),
         StreamBuilder<String>(
           stream: bloc.newPassword,
           builder: (_, snapshot) => TextField(
@@ -249,7 +282,9 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
                 ), //InputDecoration
               ),
         ), //TextField
-        SizedBox(height: dividerSize,),
+        SizedBox(
+          height: dividerSize,
+        ),
         StreamBuilder(
           stream: bloc.confirmPassword,
           builder: (_, snapshot) => TextField(
@@ -264,9 +299,13 @@ class _ChangePasswordFormState extends State<_ChangePasswordForm> {
                 ), //InputDecoration
               ),
         ),
-        SizedBox(height: dividerSize*1.5,),
+        SizedBox(
+          height: dividerSize * 1.5,
+        ),
         _showButton(context),
-        SizedBox(height: dividerSize,)
+        SizedBox(
+          height: dividerSize,
+        )
       ],
     );
   }

@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginScreen> {
         final page = BlocProvider<ChangePasswordBloc>(
           builder: (_, bloc) => bloc ?? ChangePasswordBloc(),
           onDispose: (_, bloc) => bloc?.dispose(),
-          child: ChangePasswordScreen(),
+          child: ChangePasswordScreen(mandatory: true,),
         );
         _openPage(page);
       }

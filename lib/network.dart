@@ -72,7 +72,11 @@ class RailApi {
           return body;
         })
         .then(json.decode)
-        .then((json) => AuthorizationModel.fromJson(json));
+        .then((json) {
+          print('parsing to Json');
+      return AuthorizationModel.fromJson(json);
+    } );
+    print('Sending $authorizationModel back to caller');
     return authorizationModel;
   }
 
