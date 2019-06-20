@@ -10,6 +10,8 @@ import 'bloc_provider.dart';
 import 'change_password_screen.dart';
 import 'models/model.dart';
 
+
+//TODO: App bar station name size constraint check if scalable
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -24,13 +26,6 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: consta.color1,
         elevation: 0,
         actions: <Widget>[
-          IconButton(
-            icon: Image.asset(
-              "assets/icons/logout.png",
-              color: Color.fromRGBO(255, 255, 255, 1),
-            ),
-            onPressed: () => logout(),
-          ),
           GestureDetector(
             onTapDown: (_details) {
               final page = BlocProvider<ChangePasswordBloc>(
@@ -43,8 +38,15 @@ class _HomePageState extends State<HomePage> {
                     return page;
                   }));
             },
-            child: Text('Change Password'),
-          )
+            child: Text('Change Password',),
+          ),
+          IconButton(
+            icon: Image.asset(
+              "assets/icons/logout.png",
+              color: Color.fromRGBO(255, 255, 255, 1),
+            ),
+            onPressed: () => logout(),
+          ),
         ],
       ),
       body: Container(
@@ -77,7 +79,7 @@ class _Content extends StatefulWidget {
 }
 
 class _ContentState extends State<_Content> {
-  Station _currStation;
+  Station _currStation ;
 
   @override
   Widget build(BuildContext context) {

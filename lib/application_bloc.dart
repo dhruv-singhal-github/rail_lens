@@ -156,7 +156,7 @@ class ChangePasswordBloc extends BaseBloc with Validator {
   final _confirmPasswordController = PublishSubject<String>();
   final _oldPasswordController = PublishSubject<String>();
 
-  String _lastPassword;
+  String _lastPassword = '';
   final RailApi _api = RailApi();
 
   Stream<String> get newPassword =>
@@ -176,7 +176,7 @@ class ChangePasswordBloc extends BaseBloc with Validator {
 
   Stream<AuthorizationModel> get authorizationStream =>
       confirmPassword.asyncMap<Map<String,String>>((passList) {
-        passList = passList;
+        _lastPassword = passList[0];
         var credMap = Map<String, String>();
         credMap['username'] = _username;
         credMap['oldpass'] = passList[0];
