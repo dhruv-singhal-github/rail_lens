@@ -9,8 +9,8 @@ import 'models/model.dart';
 import 'network.dart';
 
 class ApplicationBloc extends BaseBloc {
-  //TODO: Replace Object with appropriate type
-  final _databaseStreamController = StreamController<Object>();
+  //TODO: Use database if not using sharedpreferences
+//  final _databaseStreamController = StreamController<Object>();
   final RailApi _railApi = RailApi();
 
   //WorkAround until db integration
@@ -23,23 +23,26 @@ class ApplicationBloc extends BaseBloc {
   Stream<Credentials> get credentialStream =>
       Observable.fromFuture(getCredentials());
 
-
   Stream<AuthorizationModel> get isLoggedIn =>
-
-  credentialStream
-      .asyncMap((credentials) {
-    if (credentials?.username != null && credentials?.password != null) {
-      print('Found Credentials!');
-      print('They are ${credentials.username} && ${credentials.password}');
-      if(Validator.usernameConditionChecker(credentials.username) && Validator.passwordConditionChecker(credentials.password)){
-        return _railApi.login(credentials.username, credentials.password);
-      }
-      return Future.error('Stored credentials were invalid! Please login again');
-    }
-    return Future.value(AuthorizationModel(false,false,null));
-  });
+      credentialStream.asyncMap((credentials) {
+        print('Getting credentials!');
+        if (credentials?.username != null && credentials?.password != null) {
+          print('Found Credentials!');
+          print('They are ${credentials.username} && ${credentials.password}');
+          if (Validator.usernameConditionChecker(credentials.username) &&
+              Validator.passwordConditionChecker(credentials.password)) {
+            return _railApi.login(credentials.username, credentials.password);
+          }
+          print('Invalid stored credentials');
+          return Future.error(
+              'Stored credentials were invalid! Please login again');
+        }
+        print('No credentials stored');
+        return Future.value(AuthorizationModel(false, false, null));
+      });
 
   Future<void> storeCredentials(String username, String password) async {
+    print('Storing credentials');
     _cachedUsername = username;
     _cachedPassword = password;
     //TODO: Save credentials in base64(use plain text until login and change password are converted)
@@ -49,17 +52,21 @@ class ApplicationBloc extends BaseBloc {
   }
 
   Future<Credentials> getCredentials() async {
-    if(_cachedUsername?.isNotEmpty==true && _cachedPassword?.isNotEmpty == true){
+    print('getting credentials');
+    if (!(_cachedUsername?.isNotEmpty == true) &&
+        !(_cachedPassword?.isEmpty == true)) {
+      print('first time loading');
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String user = prefs.getString(consta.userKey);
       String pass = prefs.getString(consta.passKey);
       _cachedUsername = user;
       _cachedPassword = pass;
     }
+    print('Already cached! u is $_cachedUsername and p is $_cachedPassword');
     return Credentials(_cachedUsername, _cachedPassword);
   }
 
-  Future<void> logout() async{
+  Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(consta.userKey, null);
     await prefs.setString(consta.passKey, null);
@@ -69,13 +76,10 @@ class ApplicationBloc extends BaseBloc {
     _cachedStationList = list;
   }
 
-
-
   Future<void> storeUsername(String username) async {
     _cachedUsername = username;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(consta.userKey, username);
-
   }
 
   Future<void> storePassword(String password) async {
@@ -84,14 +88,15 @@ class ApplicationBloc extends BaseBloc {
     await prefs.setString(consta.passKey, password);
   }
 
-  ApplicationBloc() {//TODO:Complete
+  ApplicationBloc() {
+    //TODO:Complete
     //Setup the database stream, so that isLoggedIn can return actual credentials
   }
 
   @override
   void dispose() {
     print('Disposing Application Bloc');
-    _databaseStreamController.close();
+//    _databaseStreamController.close();
   }
 }
 
@@ -111,15 +116,15 @@ class LoginBloc extends BaseBloc with Validator {
   //TODO: Yes this is ugly, please change
   Stream<List<Object>> get _userPassStream =>
       Observable.zip2(_usernameController.stream, _passwordController.stream,
-              (u, p) {
-            print('$u and $p were submitted');
-            return [
-              u,
-              p,
-              Validator.usernameConditionChecker(u) &&
-                  Validator.passwordConditionChecker(p)
-            ];
-          });
+          (u, p) {
+        print('$u and $p were submitted');
+        return [
+          u,
+          p,
+          Validator.usernameConditionChecker(u) &&
+              Validator.passwordConditionChecker(p)
+        ];
+      });
 
   Stream<bool> get submitCheck => _userPassStream.map((data) => data[2]);
 
@@ -157,12 +162,12 @@ class ChangePasswordBloc extends BaseBloc with Validator {
   Stream<String> get newPassword =>
       _newPasswordController.stream.transform(passwordValidator);
   Stream<List<Object>> get confirmPassword => Observable.zip3(
-      _newPasswordController.stream,
-      _confirmPasswordController.stream,
-      _oldPasswordController.stream, (newPass, confPass, oldPass) {
-    print('given passes are $oldPass, $newPass, $confPass');
-    return [oldPass, newPass, confPass];
-  }).transform(confPassValidator);
+          _newPasswordController.stream,
+          _confirmPasswordController.stream,
+          _oldPasswordController.stream, (newPass, confPass, oldPass) {
+        print('given passes are $oldPass, $newPass, $confPass');
+        return [oldPass, newPass, confPass];
+      }).transform(confPassValidator);
 
   //TODO: Change so that it accesses username saved from the database
   Stream<String> get usernameStream => Observable.just('a');
@@ -177,8 +182,7 @@ class ChangePasswordBloc extends BaseBloc with Validator {
         passList[passList.length - 1] = username;
         print('Sending this parameter list -> $passList');
         return passList;
-      })
-          .asyncMap((pair)=>_api.changePassword(pair[0], pair[1], pair[2]));
+      }).asyncMap((pair) => _api.changePassword(pair[0], pair[1], pair[2]));
 //          .map((dummy) {
 //        //TODO: Remove dummy data from here
 //        return new AuthorizationModel(true, false, ['DEL']);
@@ -198,4 +202,11 @@ class ChangePasswordBloc extends BaseBloc with Validator {
     _newPasswordController.close();
     _confirmPasswordController.close();
   }
+}
+
+class UploadBloc extends BaseBloc {
+  final RailApi _api = RailApi();
+
+  @override
+  void dispose() {}
 }

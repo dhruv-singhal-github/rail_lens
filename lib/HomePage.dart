@@ -64,6 +64,7 @@ class _ContentState extends State<_Content> {
 
   @override
   Widget build(BuildContext context) {
+    print('val of curr station is ${_currStation?.stnName}');
     sizeconfig().init(context);
     return Container(
         decoration: BoxDecoration(
@@ -92,7 +93,7 @@ class _ContentState extends State<_Content> {
                     children: <Widget>[
                       Center(
                           child: Text(
-                        _currStation.stnCode,
+                        (_currStation?.stnCode) ?? '',
                         style: TextStyle(
                             color: consta.color1,
                             fontSize: 30,
@@ -103,30 +104,41 @@ class _ContentState extends State<_Content> {
                       Container(
                         width: 220,
                         child: DropdownButton<Station>(
-                          onChanged: (selectedStation){
-                            setState(() {
-                              _currStation = selectedStation;
-                            });
+                          onChanged: (selectedStation) {
+                            setState(
+                              () {
+                                print('On changed called!');
+                                _currStation = selectedStation;
+                              },
+                            );
                           },
+                          iconSize: 40,
+                          hint: Text('Select a Station'),
+                          value: _currStation,
+                          style: TextStyle(
+                              color: consta.color1,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
                           items: Provider.of<ApplicationBloc>(context)
                               .cachedStationList
-                              .map((station) =>
-                            DropdownMenuItem<Station>(
-                              value: station,
-                              child: Text(
-                                station.stnName,
-                                style: TextStyle(
-                                    color: consta.color2, fontSize: 15),
-                              ),
-                            )
-                          ),
+                              .map(
+                                (station) => DropdownMenuItem<Station>(
+                                      value: station,
+                                      child: SizedBox(
+                                        child: Text(
+                                          station.stnName,
+                                        ),
+                                      ),
+                                    ),
+                              )
+                              .toList(),
                         ),
                       ),
-                      Image.asset(
-                        "assets/icons/search.png",
-                        color: consta.color1,
-                        width: 30,
-                      )
+//                      Image.asset(
+//                        "assets/icons/search.png",
+//                        color: consta.color1,
+//                        width: 30,
+//                      )
                     ],
                   ),
                 )),

@@ -116,8 +116,9 @@ class _LoginPageState extends State<LoginScreen> {
 //    );
         //Save in database
         LoginBloc bloc = Provider.of<LoginBloc>(context);
-        Provider.of<ApplicationBloc>(context)
-            .storeCredentials(bloc.lastUsername, bloc.lastPassword);
+        ApplicationBloc appBloc =  Provider.of<ApplicationBloc>(context);
+        appBloc.storeStationList(model.stationList);
+        appBloc.storeCredentials(bloc.lastUsername, bloc.lastPassword);
         final page = HomePage();
         _openPage(page);
       } else {

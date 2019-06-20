@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'HomePage.dart';
 import 'application_bloc.dart';
 import 'bloc_provider.dart';
 import 'consta.dart';
+import 'debug_code.dart' as debug;
 import 'login_screen.dart';
 import 'models/model.dart';
 import 'reusable_ui.dart';
@@ -27,38 +30,26 @@ class Application extends StatelessWidget {
 }
 
 class ApplicationStateManager extends StatefulWidget {
+
   @override
   ApplicationState createState() => ApplicationState();
 }
 
 class ApplicationState extends State<ApplicationStateManager> {
-  ApplicationBloc bloc;
+  StreamSubscription<AuthorizationModel> _isLoggedInStream;
+  ApplicationBloc _bloc;
   //TODO: Replace StreamBuilder with custom stream logic
+
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AuthorizationModel>(
-      stream: Provider.of<ApplicationBloc>(context).isLoggedIn,
-      builder: (context, AsyncSnapshot<AuthorizationModel> snapshot) {
-        if (!snapshot.hasData) {
-          return LoadingPage();
-        } else {
-          var authModel = snapshot.data;
-          if (authModel?.isAuthorized == true &&
-              !(authModel?.isDefault == true)) {
-            Provider.of<ApplicationBloc>(context)
-                .storeStationList(authModel.stationList);
-            return buildHomePage();
-          } else {
-            return buildLoginPage();
-          }
-        }
-      },
-    );
+    return LoadingPage();
   }
 
   @override
   void didChangeDependencies() {
-//    bloc = Provider.of<ApplicationBloc>(context);
+    _bloc = Provider.of<ApplicationBloc>(context);
+    _isLoggedInStream = _bloc.isLoggedIn.listen(_onIsLoggedInData, onError: _onIsLoggedInError);
     super.didChangeDependencies();
   }
 
@@ -78,6 +69,33 @@ class ApplicationState extends State<ApplicationStateManager> {
       child: LoginScreen(),
     );
     return page;
+  }
+
+  void _onIsLoggedInData(AuthorizationModel model) {
+    print('authmodel is $model');
+    debug.printAuthorizationModel(model);
+    if (model?.isAuthorized == true &&
+        !(model?.isDefault == true)) {
+      _bloc.storeStationList(model.stationList);
+
+      _openPage(buildHomePage());
+    } else {
+      return _openPage(buildLoginPage());
+    }
+  }
+
+  void _openPage(Widget page) {
+    Navigator.pushReplacement(this.context,
+        MaterialPageRoute(builder: (context) {
+          return page;
+        }));
+  }
+
+
+  void _onIsLoggedInError(Object error, StackTrace trace) {
+  print('Handle onIsLoggedInError');
+  print('Error is $error');
+  print('Stacktrace is $trace');
   }
 }
 
