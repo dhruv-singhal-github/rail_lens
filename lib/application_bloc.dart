@@ -16,23 +16,27 @@ class ApplicationBloc extends BaseBloc {
   //WorkAround until db integration
   String _cachedUsername;
   String _cachedPassword;
-  List<String> _cachedStationList;
+  List<Station> _cachedStationList;
 
+  List<Station> get cachedStationList => _cachedStationList;
   //TODO: Replace with actual database call
   Stream<Credentials> get credentialStream =>
       Observable.fromFuture(getCredentials());
-//      Observable.timer(Credentials(_cachedUsername, _cachedPassword),
-//          Duration(milliseconds: 10));
 
-  Stream<bool> get isLoggedIn =>
-//      Observable.timer(false, Duration(seconds: 10));
-  credentialStream.map((credentials) {
+
+  Stream<AuthorizationModel> get isLoggedIn =>
+
+  credentialStream
+      .asyncMap((credentials) {
     if (credentials?.username != null && credentials?.password != null) {
       print('Found Credentials!');
       print('They are ${credentials.username} && ${credentials.password}');
-      return true;
+      if(Validator.usernameConditionChecker(credentials.username) && Validator.passwordConditionChecker(credentials.password)){
+        return _railApi.login(credentials.username, credentials.password);
+      }
+      return Future.error('Stored credentials were invalid! Please login again');
     }
-    return false;
+    return Future.value(AuthorizationModel(false,false,null));
   });
 
   Future<void> storeCredentials(String username, String password) async {
@@ -45,10 +49,14 @@ class ApplicationBloc extends BaseBloc {
   }
 
   Future<Credentials> getCredentials() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String user = prefs.getString(consta.userKey);
-    String pass = prefs.getString(consta.passKey);
-    return Future<Credentials>(() => Credentials(user, pass));
+    if(_cachedUsername?.isNotEmpty==true && _cachedPassword?.isNotEmpty == true){
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String user = prefs.getString(consta.userKey);
+      String pass = prefs.getString(consta.passKey);
+      _cachedUsername = user;
+      _cachedPassword = pass;
+    }
+    return Credentials(_cachedUsername, _cachedPassword);
   }
 
   Future<void> logout() async{
@@ -57,16 +65,23 @@ class ApplicationBloc extends BaseBloc {
     await prefs.setString(consta.passKey, null);
   }
 
-  void storeStationList(List<String> list) {
+  void storeStationList(List<Station> list) {
     _cachedStationList = list;
   }
 
-  void storeUsername(String username) {
+
+
+  Future<void> storeUsername(String username) async {
     _cachedUsername = username;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(consta.userKey, username);
+
   }
 
-  void storePassword(String password) {
+  Future<void> storePassword(String password) async {
     _cachedPassword = password;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(consta.passKey, password);
   }
 
   ApplicationBloc() {//TODO:Complete
@@ -86,7 +101,7 @@ class LoginBloc extends BaseBloc with Validator {
   String _lastUsername = '';
   String _lastPassword = '';
 
-  final RailApi api = RailApi();
+  final RailApi _api = RailApi();
 
   Stream<String> get username =>
       _usernameController.stream.transform(usernameValidator);
@@ -112,7 +127,7 @@ class LoginBloc extends BaseBloc with Validator {
       Observable(_userPassStream.where((list) => list[2])).doOnData((dataList) {
         _lastPassword = dataList[1];
         _lastUsername = dataList[0];
-      }).asyncMap((pair) => api.login(pair[0], pair[1]));
+      }).asyncMap((pair) => _api.login(pair[0], pair[1]));
 //          .map((dummy) {
 //        //TODO: Remove dummy data from here
 //        return new AuthorizationModel(true, true, ['DEL']);

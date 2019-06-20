@@ -4,6 +4,7 @@ import 'application_bloc.dart';
 import 'bloc_provider.dart';
 import 'consta.dart';
 import 'login_screen.dart';
+import 'models/model.dart';
 import 'reusable_ui.dart';
 
 void main() => runApp(new Application());
@@ -35,16 +36,22 @@ class ApplicationState extends State<ApplicationStateManager> {
   //TODO: Replace StreamBuilder with custom stream logic
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<AuthorizationModel>(
       stream: Provider.of<ApplicationBloc>(context).isLoggedIn,
-      builder: (context, AsyncSnapshot<bool> snapshot) {
+      builder: (context, AsyncSnapshot<AuthorizationModel> snapshot) {
         if (!snapshot.hasData) {
           return LoadingPage();
-        } else if (snapshot.data) {
-          return showHomePage();
+        } else {
+          var authModel = snapshot.data;
+          if (authModel?.isAuthorized == true &&
+              !(authModel?.isDefault == true)) {
+            Provider.of<ApplicationBloc>(context)
+                .storeStationList(authModel.stationList);
+            return buildHomePage();
+          } else {
+            return buildLoginPage();
+          }
         }
-        return showLoginPage();
-//          return showHomePage();
       },
     );
   }
@@ -55,7 +62,7 @@ class ApplicationState extends State<ApplicationStateManager> {
     super.didChangeDependencies();
   }
 
-  Widget showHomePage() {
+  Widget buildHomePage() {
 //    final page = BlocProvider<HomePageBloc>(
 //      builder: (_, bloc)=>bloc??HomePageBloc(),
 //      onDispose: (_, bloc)=> bloc?.dispose(),
@@ -64,7 +71,7 @@ class ApplicationState extends State<ApplicationStateManager> {
     return HomePage();
   }
 
-  Widget showLoginPage() {
+  Widget buildLoginPage() {
     final page = BlocProvider<LoginBloc>(
       builder: (_, bloc) => bloc ?? LoginBloc(),
       onDispose: (_, bloc) => bloc?.dispose(),
@@ -91,7 +98,9 @@ class LoadingPage extends StatelessWidget {
               onPressed: null)
         ],
       ),
-      body: LoadingCircular(message: 'Logging In',),
+      body: LoadingCircular(
+        message: 'Logging In',
+      ),
     );
   }
 }

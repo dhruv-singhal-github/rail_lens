@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:rail_lens/consta.dart';
 import 'package:rail_lens/sizeconfig.dart';
-import 'package:rail_lens/main.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 import 'package:rail_lens/gallery.dart';
 import 'package:rail_lens/login_screen.dart';
-import 'package:rounded_floating_app_bar/rounded_floating_app_bar.dart';
 
 import 'application_bloc.dart';
 import 'bloc_provider.dart';
-
-
+import 'models/model.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,25 +17,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return   Scaffold(
-          appBar: AppBar(
-            title: Text("RailLens"),
-            backgroundColor: consta.color1,
-            elevation: 0,
-            actions: <Widget>[
-              IconButton(
-                  icon: Image.asset(
-                    "assets/icons/logout.png",
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                  ),
-                  onPressed: ()=>logout())
-            ],
-          ),
-          body: Container(
-            color: Color.fromRGBO(255, 255, 255, 1),
-            child: content(),
-          ),
-        );
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("RailLens"),
+        backgroundColor: consta.color1,
+        elevation: 0,
+        actions: <Widget>[
+          IconButton(
+              icon: Image.asset(
+                "assets/icons/logout.png",
+                color: Color.fromRGBO(255, 255, 255, 1),
+              ),
+              onPressed: () => logout())
+        ],
+      ),
+      body: Container(
+        color: Color.fromRGBO(255, 255, 255, 1),
+        child: _Content(),
+      ),
+    );
   }
 
   void logout() {
@@ -55,25 +49,23 @@ class _HomePageState extends State<HomePage> {
     );
     Navigator.pushReplacement(this.context,
         MaterialPageRoute(builder: (context) {
-          return page;
-        }));
-
+      return page;
+    }));
   }
 }
 
-
-class content extends StatefulWidget {
+class _Content extends StatefulWidget {
   @override
-  _contentState createState() => _contentState();
+  _ContentState createState() => _ContentState();
 }
 
-class _contentState extends State<content> {
-  String StationCode = "DLI";
-  String StationForm = "Old Delhi Railway Station";
+class _ContentState extends State<_Content> {
+  Station _currStation;
+
   @override
   Widget build(BuildContext context) {
     sizeconfig().init(context);
-      return Container(
+    return Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
           colors: [consta.color1, Color.fromRGBO(255, 255, 255, 1)],
@@ -95,11 +87,12 @@ class _contentState extends State<content> {
                 child: Container(
                   height: 80,
                   padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(mainAxisAlignment:MainAxisAlignment.spaceEvenly,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Center(
                           child: Text(
-                        StationCode,
+                        _currStation.stnCode,
                         style: TextStyle(
                             color: consta.color1,
                             fontSize: 30,
@@ -108,14 +101,28 @@ class _contentState extends State<content> {
                       VerticalDivider(
                           indent: 0, width: 15, color: consta.color2),
                       Container(
-                          width: 220,
-                          child: Text(
-                            StationForm,
-                            style:
-                                TextStyle(color: consta.color2, fontSize: 15),
-                          )),
+                        width: 220,
+                        child: DropdownButton<Station>(
+                          onChanged: (selectedStation){
+                            setState(() {
+                              _currStation = selectedStation;
+                            });
+                          },
+                          items: Provider.of<ApplicationBloc>(context)
+                              .cachedStationList
+                              .map((station) =>
+                            DropdownMenuItem<Station>(
+                              value: station,
+                              child: Text(
+                                station.stnName,
+                                style: TextStyle(
+                                    color: consta.color2, fontSize: 15),
+                              ),
+                            )
+                          ),
+                        ),
+                      ),
                       Image.asset(
-
                         "assets/icons/search.png",
                         color: consta.color1,
                         width: 30,
@@ -130,7 +137,6 @@ class _contentState extends State<content> {
                   color: Color(0x000000),
                   child: iconplate(),
                 )),
-
           ],
         ));
   }
@@ -155,27 +161,15 @@ class iconplate extends StatelessWidget {
                   children: <Widget>[
                     iconwdg(
                         IconButton(
-
                             icon: Image.asset(
                               "assets/icons/face.png",
                               color: consta.color1,
                             ),
                             onPressed: () {
-
-
-
-
-
-
-
-
-
-
                               Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) => gallery("Station Facade", 74, 1)
-                              ));
-                            })
-                        ,
+                                  builder: (context) =>
+                                      gallery("Station Facade", 74, 1)));
+                            }),
                         "Station Facade"),
                     iconwdg(
                         IconButton(
@@ -183,11 +177,10 @@ class iconplate extends StatelessWidget {
                               "assets/icons/circ.png",
                               color: consta.color1,
                             ),
-                            onPressed:() {
+                            onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Circulating Area", 75, 2)
-                              ));
+                                      gallery("Circulating Area", 75, 2)));
                             }),
                         "Circulating Area"),
                     iconwdg(
@@ -197,8 +190,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Illumination", 76, 1)
-                              ));
+                                      gallery("Illumination", 76, 1)));
                             }),
                         "Illumination"),
                   ]),
@@ -211,11 +203,10 @@ class iconplate extends StatelessWidget {
                               "assets/icons/waitingroom.png",
                               color: consta.color1,
                             ),
-                            onPressed:() {
+                            onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Waiting Room", 77, 2)
-                              ));
+                                      gallery("Waiting Room", 77, 2)));
                             }),
                         "Waiting Room"),
                     iconwdg(
@@ -227,8 +218,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Platform", 78, 1)
-                              ));
+                                      gallery("Platform", 78, 1)));
                             }),
                         "Platform"),
                     iconwdg(
@@ -240,50 +230,44 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Refreshment Rooms", 80, 2)
-                              ));
+                                      gallery("Refreshment Rooms", 80, 2)));
                             }),
                         "Refreshment Rooms"),
                   ]),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    iconwdg(
-                        IconButton(
-                            icon: Image.asset("assets/icons/taj.png",
-                                color: consta.color1),
-                            onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Local Heritage", 79, 1)
-                              ));
-                            }),
-                        "Local Heritage"),
-                    iconwdg(
-                        IconButton(
-                            icon: Image.asset(
-                              "assets/icons/stair.png",
-                              color: consta.color1,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Bridges and Escalators", 81, 2)
-                              ));
-                            }),
-                        "Bridges and Escalators"),
-                    iconwdg(
-                        IconButton(
-                            icon: Image.asset("assets/icons/elevator.png",
-                                color: consta.color1),
-                            onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Lifts", 81, 1)
-                              ));
-                            }),
-                        "Lifts"),
-                  ]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <
+                  Widget>[
+                iconwdg(
+                    IconButton(
+                        icon: Image.asset("assets/icons/taj.png",
+                            color: consta.color1),
+                        onPressed: () {
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (context) =>
+                                  gallery("Local Heritage", 79, 1)));
+                        }),
+                    "Local Heritage"),
+                iconwdg(
+                    IconButton(
+                        icon: Image.asset(
+                          "assets/icons/stair.png",
+                          color: consta.color1,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (context) =>
+                                  gallery("Bridges and Escalators", 81, 2)));
+                        }),
+                    "Bridges and Escalators"),
+                iconwdg(
+                    IconButton(
+                        icon: Image.asset("assets/icons/elevator.png",
+                            color: consta.color1),
+                        onPressed: () {
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (context) => gallery("Lifts", 81, 1)));
+                        }),
+                    "Lifts"),
+              ]),
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -296,8 +280,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Information Displays", 82, 2)
-                              ));
+                                      gallery("Information Displays", 82, 2)));
                             }),
                         "Information Displays"),
                     iconwdg(
@@ -309,8 +292,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Restrooms", 84, 1)
-                              ));
+                                      gallery("Restrooms", 84, 1)));
                             }),
                         "Restrooms"),
                     iconwdg(
@@ -320,8 +302,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Others", 83, 2)
-                              ));
+                                      gallery("Others", 83, 2)));
                             }),
                         "Others"),
                   ])
@@ -332,21 +313,19 @@ class iconplate extends StatelessWidget {
 }
 
 Widget iconwdg(IconButton domain, String domainname) {
-
   // double width = MediaQuery.of(context).size.width;
   return Container(
     width: 110,
     padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-
-
-   child:
-    Column(
+    child: Column(
       children: <Widget>[
         domain,
         Text(
           domainname,
           textAlign: TextAlign.center,
-          style: TextStyle(color: consta.color2,fontSize: sizeconfig.blockSizeHorizontal*3.5),
+          style: TextStyle(
+              color: consta.color2,
+              fontSize: sizeconfig.blockSizeHorizontal * 3.5),
         )
       ],
     ),
