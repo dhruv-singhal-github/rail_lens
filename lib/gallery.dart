@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
+
 import 'package:rail_lens/sizeconfig.dart';
 import 'package:rail_lens/consta.dart';
 import 'package:rail_lens/models/domainimage.dart';
@@ -7,11 +7,13 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'package:backdrop/backdrop.dart';
 import 'package:rail_lens/models/photolist.dart';
 import 'reusable_ui.dart';
 
 class gallery extends StatelessWidget {
   var imagedomain = null;
+  var context;
   var imagecode = null;
   var _isChecked = false;
   var colorscheme = 1;
@@ -19,9 +21,10 @@ class gallery extends StatelessWidget {
   String password = 'a';
   var bAuth = 'Basic ' + base64Encode(utf8.encode('a:a'));
 
-  String defaultDate = "No image uploaded";
+  String defaultDate = "Unavailable";
   var colour = consta.color1;
   var colour2 = consta.color2;
+
   gallery(imagedomain, imagecode, colorscheme) {
     this.imagedomain = imagedomain;
     this.imagecode = imagecode;
@@ -52,16 +55,20 @@ class gallery extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     sizeconfig().init(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(imagedomain),
+        backgroundColor: consta.color1,
+      ),
       body: Container(
         width: sizeconfig.blockSizeHorizontal * 100,
         height: sizeconfig.blockSizeVertical * 100,
         child: FutureBuilder<photolist>(
             future: getimage(),
-            builder: (context, snapshot) {
+            builder: (Context, snapshot) {
               if (snapshot.connectionState == ConnectionState.none) {
                 print("nullsnp");
                 return LoadingCircular(message: 'Connecting to our database');
@@ -77,8 +84,8 @@ class gallery extends StatelessWidget {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    Container(
-                        width: sizeconfig.blockSizeHorizontal * 60,
+                    /*  Container(
+++                        width: sizeconfig.blockSizeHorizontal * 60,
                         height: sizeconfig.blockSizeVertical * 8,
                         margin: EdgeInsets.fromLTRB(
                             0, sizeconfig.blockSizeVertical * 5, 0, 0),
@@ -93,77 +100,71 @@ class gallery extends StatelessWidget {
                                   style: TextStyle(
                                       color: Color.fromRGBO(255, 255, 255, 1),
                                       fontWeight: FontWeight.bold),
-                                )))),
+                                )))),*/
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
-                        snapshot.data.photos.length >=
-                                1
+                        snapshot.data.photos.length >= 1
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[0].imagename +
                                     "&thumb=y"),
                                 snapshot.data.photos[0].date)
                             : imagecontainer(
-                                (("assets/icons/info.png")), defaultDate),
-                        snapshot.data.photos.length >=
-                                2
+                                (("assets/icons/ina.png")), defaultDate),
+                        snapshot.data.photos.length >= 2
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[1].imagename +
                                     "&thumb=y"),
                                 snapshot.data.photos[1].date)
                             : imagecontainer(
-                                (("assets/icons/info.png")), defaultDate)
+                                (("assets/icons/ina.png")), defaultDate)
                       ],
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        snapshot.data.photos.length >=
-                                3
+                        snapshot.data.photos.length >= 3
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[2].imagename +
                                     "&thumb=y"),
                                 snapshot.data.photos[2].date)
                             : imagecontainer(
-                                (("assets/icons/info.png")), defaultDate),
-                        snapshot.data.photos.length >=
-                                4
+                                (("assets/icons/ina.png")), defaultDate),
+                        snapshot.data.photos.length >= 4
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[3].imagename +
                                     "&thumb=y"),
                                 snapshot.data.photos[3].date)
                             : imagecontainer(
-                                (("assets/icons/info.png")), defaultDate)
+                                (("assets/icons/ina.png")), defaultDate)
                       ],
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        snapshot.data.photos.length >=
-                                5
+                        snapshot.data.photos.length >= 5
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[4].imagename +
                                     "&thumb=y"),
                                 snapshot.data.photos[4].date)
                             : imagecontainer(
-                                (("assets/icons/info.png")), defaultDate),
-                        snapshot.data.photos.length >=
-                                6
+                                (("assets/icons/ina.png")), defaultDate),
+                        snapshot.data.photos.length >= 6
                             ? imagecontainer(
                                 ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                                     snapshot.data.photos[5].imagename +
                                     "&thumb=y"),
                                 snapshot.data.photos[5].date)
                             : imagecontainer(
-                                (("assets/icons/info.png")), defaultDate)
+                                (("assets/icons/ina.png")), defaultDate)
                       ],
                     )
                   ],
@@ -182,11 +183,18 @@ class gallery extends StatelessWidget {
   }
 
   Widget imageNotPresentIndicator() {
-    return imagecontainer((("assets/icons/info.png")), defaultDate);
+    return imagecontainer((("assets/icons/ina.png")), defaultDate);
   }
+}
 
-  Widget imagecontainer(String pic, String date) {
+class imagecontainer extends StatelessWidget {
+  String pic, date;
+  imagecontainer(this.pic, this.date);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
+
         //margin:
         //   EdgeInsets.symmetric(vertical: sizeconfig.blockSizeVertical * 2.5),
         //     padding: EdgeInsets.all(5),
@@ -195,10 +203,10 @@ class gallery extends StatelessWidget {
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Stack(children: [
             DottedBorder(
-              color: colour,
+              color: consta.color2,
               gap: 3,
               strokeWidth: 2.5,
-              child: pic == "assets/icons/info.png"
+              child: pic == "assets/icons/ina.png"
                   ? Image.asset(pic)
                   : imagecheck(pic),
             ),
@@ -207,19 +215,23 @@ class gallery extends StatelessWidget {
                 bottom: 0,
                 child: Container(
                     margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    height: sizeconfig.blockSizeVertical *9,
+                    height: sizeconfig.blockSizeVertical * 9,
                     width: sizeconfig.blockSizeHorizontal * 9,
                     child: FloatingActionButton(
-                      onPressed: () {},child: const Icon(Icons.add_circle),
-                      backgroundColor: colour2,
+                      onPressed: () {
+                        _settingModalBottomSheet(context);
+                      },
+                      child: const Icon(Icons.add_circle),
+                      backgroundColor: consta.color1,
                     )))
           ]),
           Container(
               child: Text(
             date,
-            style: TextStyle(color: colour2),
+            style: TextStyle(color: consta.color2),
           ))
         ]));
+    ;
   }
 }
 
@@ -235,11 +247,14 @@ class imagecheck extends StatefulWidget {
 
 class _imagecheckState extends State<imagecheck> {
   var pic;
+
   _imagecheckState(var pic) {
     this.pic = pic;
   }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext Context) {
+    print(context);
     return Image.network(
       pic,
       height: sizeconfig.blockSizeHorizontal * 30,
@@ -253,6 +268,7 @@ class _imagecheckState extends State<imagecheck> {
 
     //  Container(
     // height: sizeconfig.blockSizeHorizontal * 30,
+    
     //    decoration: BoxDecoration(
     image:
     Image.network(pic);
@@ -261,4 +277,27 @@ class _imagecheckState extends State<imagecheck> {
     // )
     // );
   }
+}
+
+void _settingModalBottomSheet(BuildContext context) {
+  print(context);
+  showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          child: new Wrap(
+            children: <Widget>[
+              new ListTile(
+                  leading: new Icon(Icons.music_note),
+                  title: new Text('Music'),
+                  onTap: () => {}),
+              new ListTile(
+                leading: new Icon(Icons.videocam),
+                title: new Text('Video'),
+                onTap: () => {},
+              ),
+            ],
+          ),
+        );
+      });
 }
