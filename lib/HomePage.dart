@@ -3,13 +3,14 @@ import 'package:rail_lens/consta.dart';
 import 'package:rail_lens/sizeconfig.dart';
 
 import 'package:rail_lens/gallery.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:rail_lens/login_screen.dart';
 
 import 'application_bloc.dart';
 import 'bloc_provider.dart';
 import 'change_password_screen.dart';
 import 'models/model.dart';
-
+Station _currStation ;
 
 //TODO: App bar station name size constraint check if scalable
 class HomePage extends StatefulWidget {
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> {
                     return page;
                   }));
             },
-            child: Text('Change Password',),
+            child: Center(child: Text('Change Password',)),
           ),
           IconButton(
             icon: Image.asset(
@@ -79,7 +80,7 @@ class _Content extends StatefulWidget {
 }
 
 class _ContentState extends State<_Content> {
-  Station _currStation ;
+
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +200,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Station Facade", 74, 1)));
+                                      gallery("Station Facade", 74, 1,_currStation.stnCode)));
                             }),
                         "Station Facade"),
                     iconwdg(
@@ -211,7 +212,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Circulating Area", 75, 2)));
+                                      gallery("Circulating Area", 75, 2,_currStation.stnCode)));
                             }),
                         "Circulating Area"),
                     iconwdg(
@@ -221,7 +222,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Illumination", 76, 1)));
+                                      gallery("Illumination", 76, 1,_currStation.stnCode)));
                             }),
                         "Illumination"),
                   ]),
@@ -237,7 +238,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Waiting Room", 77, 2)));
+                                      gallery("Waiting Room", 77, 2,_currStation.stnCode)));
                             }),
                         "Waiting Room"),
                     iconwdg(
@@ -249,7 +250,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Platform", 78, 1)));
+                                      gallery("Platform", 78, 1,_currStation.stnCode)));
                             }),
                         "Platform"),
                     iconwdg(
@@ -261,7 +262,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Refreshment Rooms", 80, 2)));
+                                      gallery("Refreshment Rooms", 80, 2,_currStation.stnCode)));
                             }),
                         "Refreshment Rooms"),
                   ]),
@@ -274,7 +275,7 @@ class iconplate extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(new MaterialPageRoute(
                               builder: (context) =>
-                                  gallery("Local Heritage", 79, 1)));
+                                  gallery("Local Heritage", 79, 1,_currStation.stnCode)));
                         }),
                     "Local Heritage"),
                 iconwdg(
@@ -286,7 +287,7 @@ class iconplate extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(new MaterialPageRoute(
                               builder: (context) =>
-                                  gallery("Bridges and Escalators", 81, 2)));
+                                  gallery("Bridges and Escalators", 81, 2,_currStation.stnCode)));
                         }),
                     "Bridges and Escalators"),
                 iconwdg(
@@ -295,7 +296,7 @@ class iconplate extends StatelessWidget {
                             color: consta.color1),
                         onPressed: () {
                           Navigator.of(context).push(new MaterialPageRoute(
-                              builder: (context) => gallery("Lifts", 81, 1)));
+                              builder: (context) => gallery("Lifts", 81, 1,_currStation.stnCode)));
                         }),
                     "Lifts"),
               ]),
@@ -311,7 +312,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Information Displays", 82, 2)));
+                                      gallery("Information Displays", 82, 2,_currStation.stnCode)));
                             }),
                         "Information Displays"),
                     iconwdg(
@@ -323,7 +324,7 @@ class iconplate extends StatelessWidget {
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
                                   builder: (context) =>
-                                      gallery("Restrooms", 84, 1)));
+                                      gallery("Restrooms", 84, 1,_currStation.stnCode)));
                             }),
                         "Restrooms"),
                     iconwdg(
@@ -331,9 +332,18 @@ class iconplate extends StatelessWidget {
                             icon: Image.asset("assets/icons/gear.png",
                                 color: consta.color1),
                             onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Others", 83, 2)));
+                              if (_currStation?.stnCode == null) {
+
+
+                              }
+
+                              else {
+                                Navigator.of(context).push(
+                                    new MaterialPageRoute(
+                                        builder: (context) =>
+                                            gallery("Others", 83, 2,
+                                                _currStation.stnCode)));
+                              }
                             }),
                         "Others"),
                   ])

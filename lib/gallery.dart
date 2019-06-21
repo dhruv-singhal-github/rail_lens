@@ -7,11 +7,12 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
-import 'package:backdrop/backdrop.dart';
+
 import 'package:rail_lens/models/photolist.dart';
 import 'reusable_ui.dart';
 
 class gallery extends StatelessWidget {
+  var StationCode=null;
   var imagedomain = null;
   var context;
   var imagecode = null;
@@ -25,10 +26,11 @@ class gallery extends StatelessWidget {
   var colour = consta.color1;
   var colour2 = consta.color2;
 
-  gallery(imagedomain, imagecode, colorscheme) {
+  gallery(imagedomain, imagecode, colorscheme,StationCode) {
     this.imagedomain = imagedomain;
     this.imagecode = imagecode;
     this.colorscheme = colorscheme;
+    this.StationCode=StationCode;
 
     if (colorscheme == 1) {
       colour = consta.color1;
@@ -42,7 +44,7 @@ class gallery extends StatelessWidget {
   Future<photolist> getimage() async {
     print("Sending request: 400");
     String url =
-        "http://samvad.cris.org.in/stationimages/rest/stationimages/stnimages/DLI/$imagecode";
+        "http://samvad.cris.org.in/stationimages/rest/stationimages/stnimages/$StationCode/$imagecode";
     final response = await http.get(url, headers: {'authorization': bAuth});
 
     if (response.statusCode == 200) {
@@ -268,7 +270,7 @@ class _imagecheckState extends State<imagecheck> {
 
     //  Container(
     // height: sizeconfig.blockSizeHorizontal * 30,
-    
+
     //    decoration: BoxDecoration(
     image:
     Image.network(pic);
@@ -289,11 +291,11 @@ void _settingModalBottomSheet(BuildContext context) {
             children: <Widget>[
               new ListTile(
                   leading: new Icon(Icons.music_note),
-                  title: new Text('Music'),
+                  title: new Text('Gallery'),
                   onTap: () => {}),
               new ListTile(
                 leading: new Icon(Icons.videocam),
-                title: new Text('Video'),
+                title: new Text('Camera'),
                 onTap: () => {},
               ),
             ],
