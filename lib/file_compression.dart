@@ -6,10 +6,11 @@ import 'dart:async';
 const _imageSizeLimit = 500000;
 const int _jpgQuality = 90;
 
-//Use the function below to call compressImageFile
 
+//Use the function below to call compressImageFile
+//
 //Future<void> compressImage(File originalImageFile, File fileToSaveTo) {
-//  return compute(_compress, [originalImageFile, fileToSaveTo]);
+//  return compute(compressImageFile, [originalImageFile, fileToSaveTo]);
 //}
 
 ///Use compute to call this function in another isolate

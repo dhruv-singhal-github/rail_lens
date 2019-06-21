@@ -83,9 +83,12 @@ class ApplicationBloc extends BaseBloc {
   }
 
   Future<void> storePassword(String password) async {
+    print('Storing password');
     _cachedPassword = password;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(consta.passKey, password);
+    await prefs.setString(consta.passKey, password).then<void>((val) {
+      print('Is storing in shared prefs complete? lol $val');
+    });
   }
 
   ApplicationBloc() {
