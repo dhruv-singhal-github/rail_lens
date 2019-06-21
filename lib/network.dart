@@ -123,7 +123,7 @@ class RailApi {
     return imageList;
   }
 
-  Future<Stream> uploadImage(
+  Future<Stream<String>> uploadImage(
       {@required Station station,
       @required int subInitId,
       @required int sno,
@@ -140,8 +140,8 @@ class RailApi {
         'Basic ${base64.encode(utf8.encode('${cr.username}:${cr.password}'))}';
     request.headers['accept'] = 'application/json';
 
-    var filepath = await _setup_testing();
-//    var filepath = image.path;
+//    var filepath = await _setup_testing();
+    var filepath = image.path;
     request.fields['stncode'] = station.stnCode;
     request.fields['subinitid'] = subInitId.toString();
     request.fields['sno'] = sno.toString();
