@@ -102,8 +102,8 @@ class Credentials {
 }
 
 class Station {
-  final String stnCode;
-  final String stnName;
+   String stnCode="     ";
+   String stnName;
   static const _stationCode = 'stncode';
   static const _stationName = 'stnname';
 
