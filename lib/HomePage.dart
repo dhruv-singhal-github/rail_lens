@@ -3,7 +3,8 @@ import 'package:rail_lens/consta.dart';
 import 'package:rail_lens/sizeconfig.dart';
 
 import 'package:rail_lens/gallery.dart';
-import 'package:oktoast/oktoast.dart';
+
+import 'package:toast/toast.dart';
 import 'package:rail_lens/login_screen.dart';
 
 import 'application_bloc.dart';
@@ -114,17 +115,19 @@ class _ContentState extends State<_Content> {
                     children: <Widget>[
                       Center(
                           child: Text(
-                        (_currStation?.stnCode) ?? '',
+                        (_currStation?.stnCode) ?? '      ',
                         style: TextStyle(
                             color: consta.color1,
-                            fontSize: 30,
+                            fontSize: 25,
                             fontWeight: FontWeight.bold),
                       )),
                       VerticalDivider(
                           indent: 0, width: 15, color: consta.color2),
                       Container(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
                         width: 220,
-                        child: DropdownButton<Station>(
+                        child:
+                        DropdownButton<Station>(
                           onChanged: (selectedStation) {
                             setState(
                               () {
@@ -133,13 +136,13 @@ class _ContentState extends State<_Content> {
                               },
                             );
                           },
-                          iconSize: 40,
+                          iconSize: 40,iconDisabledColor: consta.color1,iconEnabledColor: consta.color2,
                           hint: Text('Select a Station'),
                           value: _currStation,
                           style: TextStyle(
-                              color: consta.color1,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
+                              color: consta.color2,
+                              fontSize: 18,
+                              ),
                           items: Provider.of<ApplicationBloc>(context)
                               .cachedStationList
                               .map(
@@ -334,7 +337,7 @@ class iconplate extends StatelessWidget {
                                 color: consta.color1),
                             onPressed: () {
                               if (_currStation?.stnCode == null) {
-
+                                Toast.show("Select a Staion",context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
 
                               }
 

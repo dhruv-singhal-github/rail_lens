@@ -4,6 +4,7 @@ import 'package:rail_lens/sizeconfig.dart';
 import 'package:rail_lens/consta.dart';
 import 'package:rail_lens/models/domainimage.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -12,7 +13,10 @@ import 'package:rail_lens/models/photolist.dart';
 import 'reusable_ui.dart';
 
 class gallery extends StatelessWidget {
-  var StationCode=null;
+  var loaded = 0;
+  var FullImage = new List();
+  var ThumbnailImage = new List();
+  var StationCode = null;
   var imagedomain = null;
   var context;
   var imagecode = null;
@@ -26,11 +30,18 @@ class gallery extends StatelessWidget {
   var colour = consta.color1;
   var colour2 = consta.color2;
 
-  gallery(imagedomain, imagecode, colorscheme,StationCode) {
+  Image defaul = Image.asset(
+    "assets/icons/ina.png",
+    height: sizeconfig.blockSizeHorizontal * 30,
+    width: sizeconfig.blockSizeHorizontal * 30,
+    fit: BoxFit.fill,
+  );
+
+  gallery(imagedomain, imagecode, colorscheme, StationCode) {
     this.imagedomain = imagedomain;
     this.imagecode = imagecode;
     this.colorscheme = colorscheme;
-    this.StationCode=StationCode;
+    this.StationCode = StationCode;
 
     if (colorscheme == 1) {
       colour = consta.color1;
@@ -81,8 +92,39 @@ class gallery extends StatelessWidget {
                   message: 'Loading Pictures...',
                 );
               } else if (snapshot.connectionState == ConnectionState.done) {
+                /*   FullImage.add(Image.network(
+                    "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                        snapshot.data.photos[0].imagename));
+                FullImage.add(Image.network(
+                    "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                        snapshot.data.photos[1].imagename));
+                FullImage.add(Image.network(
+                    "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                        snapshot.data.photos[2].imagename));
+                FullImage.add(Image.network(
+                    "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                        snapshot.data.photos[3].imagename));
+                FullImage.add(Image.network(
+                    "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                        snapshot.data.photos[4].imagename));
+                FullImage.add(Image.network(
+                    "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                        snapshot.data.photos[5].imagename));*/
                 print('I have data');
                 print('There are ${snapshot.data.photos.length} photos');
+                for (int i = 0; i < snapshot.data.photos.length; i++) {
+                  FullImage.add(Image.network(
+                      "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                          snapshot.data.photos[i].imagename),);
+                  ThumbnailImage.add(Image.network(
+                    "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                        snapshot.data.photos[i].imagename +
+                        "&thumb=y",
+                    height: sizeconfig.blockSizeHorizontal * 30,
+                    width: sizeconfig.blockSizeHorizontal * 30,
+                    fit: BoxFit.fill,
+                  ));
+                }
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
@@ -109,20 +151,12 @@ class gallery extends StatelessWidget {
                       children: <Widget>[
                         snapshot.data.photos.length >= 1
                             ? imagecontainer(
-                                ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
-                                    snapshot.data.photos[0].imagename +
-                                    "&thumb=y"),
-                                snapshot.data.photos[0].date)
-                            : imagecontainer(
-                                (("assets/icons/ina.png")), defaultDate),
+                                ThumbnailImage[0], snapshot.data.photos[0].date)
+                            : imagecontainer(((defaul)), defaultDate),
                         snapshot.data.photos.length >= 2
                             ? imagecontainer(
-                                ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
-                                    snapshot.data.photos[1].imagename +
-                                    "&thumb=y"),
-                                snapshot.data.photos[1].date)
-                            : imagecontainer(
-                                (("assets/icons/ina.png")), defaultDate)
+                                ThumbnailImage[1], snapshot.data.photos[1].date)
+                            : imagecontainer(((defaul)), defaultDate)
                       ],
                     ),
                     Row(
@@ -131,20 +165,12 @@ class gallery extends StatelessWidget {
                       children: <Widget>[
                         snapshot.data.photos.length >= 3
                             ? imagecontainer(
-                                ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
-                                    snapshot.data.photos[2].imagename +
-                                    "&thumb=y"),
-                                snapshot.data.photos[2].date)
-                            : imagecontainer(
-                                (("assets/icons/ina.png")), defaultDate),
+                                ThumbnailImage[2], snapshot.data.photos[2].date)
+                            : imagecontainer(((defaul)), defaultDate),
                         snapshot.data.photos.length >= 4
                             ? imagecontainer(
-                                ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
-                                    snapshot.data.photos[3].imagename +
-                                    "&thumb=y"),
-                                snapshot.data.photos[3].date)
-                            : imagecontainer(
-                                (("assets/icons/ina.png")), defaultDate)
+                                ThumbnailImage[3], snapshot.data.photos[3].date)
+                            : imagecontainer(((defaul)), defaultDate)
                       ],
                     ),
                     Row(
@@ -153,20 +179,12 @@ class gallery extends StatelessWidget {
                       children: <Widget>[
                         snapshot.data.photos.length >= 5
                             ? imagecontainer(
-                                ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
-                                    snapshot.data.photos[4].imagename +
-                                    "&thumb=y"),
-                                snapshot.data.photos[4].date)
-                            : imagecontainer(
-                                (("assets/icons/ina.png")), defaultDate),
+                                ThumbnailImage[4], snapshot.data.photos[4].date)
+                            : imagecontainer(((defaul)), defaultDate),
                         snapshot.data.photos.length >= 6
                             ? imagecontainer(
-                                ("https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
-                                    snapshot.data.photos[5].imagename +
-                                    "&thumb=y"),
-                                snapshot.data.photos[5].date)
-                            : imagecontainer(
-                                (("assets/icons/ina.png")), defaultDate)
+                                ThumbnailImage[5], snapshot.data.photos[5].date)
+                            : imagecontainer(((defaul)), defaultDate)
                       ],
                     )
                   ],
@@ -185,13 +203,86 @@ class gallery extends StatelessWidget {
   }
 
   Widget imageNotPresentIndicator() {
-    return imagecontainer((("assets/icons/ina.png")), defaultDate);
+    return imagecontainer((defaul), defaultDate);
   }
 }
 
-class imagecontainer extends StatelessWidget {
-  String pic, date;
-  imagecontainer(this.pic, this.date);
+
+class ShowImage extends StatelessWidget {
+  var pic,date;
+
+  ShowImage(this.pic,this.date);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+
+      //margin:
+      //   EdgeInsets.symmetric(vertical: sizeconfig.blockSizeVertical * 2.5),
+      //     padding: EdgeInsets.all(5),
+        width: sizeconfig.blockSizeHorizontal * 35,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Stack(children: [
+                DottedBorder(
+                    color: consta.color2,
+                    gap: 3,
+                    strokeWidth: 2.5,
+                    child: pic
+                  //       : imagecheck(pic),
+                ),
+                Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 0),
+                        height: sizeconfig.blockSizeVertical * 9,
+                        width: sizeconfig.blockSizeHorizontal * 9,
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            _settingModalBottomSheet(context);
+                          },
+                          child: const Icon(Icons.add_circle),
+                          backgroundColor: consta.color1,
+                        )))
+              ]),
+              Container(
+                  width: sizeconfig.blockSizeHorizontal * 30,
+                  height: sizeconfig.blockSizeHorizontal * 1,
+                  child: Text(
+                    date,
+                    style: TextStyle(color: consta.color2),
+                  )),
+            ]));
+  }
+}
+
+
+class imagecontainer extends StatefulWidget {
+  var pic, date;
+  imagecontainer(this.pic , this.date);
+  @override
+  _imagecontainerState createState() => _imagecontainerState(pic, date);
+}
+
+class _imagecontainerState extends State<imagecontainer> {
+  var pic, date;
+  _imagecontainerState(this.pic, this.date) {
+    Timer countdow = new Timer(Duration(seconds: 3), (() {
+      print("timer ended");
+      setState(() {
+        print("reset state");
+        ShowImage(pic, date);
+      }
+
+      );
+    }
+    )
+    );
+  }
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -204,14 +295,30 @@ class imagecontainer extends StatelessWidget {
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Stack(children: [
-            DottedBorder(
-              color: consta.color2,
-              gap: 3,
-              strokeWidth: 2.5,
-              child: pic == "assets/icons/ina.png"
-                  ? Image.asset(pic)
-                  : imagecheck(pic),
-            ),
+         //   Shimmer.fromColors(
+           //   baseColor: Colors.grey[200],
+           //   highlightColor: Colors.grey[300],
+           //   child:
+              GestureDetector(onTap: (){
+
+                print(date);
+
+
+              },
+                child: DottedBorder(
+                    color: consta.color2,
+                    gap: 3,
+                    strokeWidth: 2.5,
+                    child:pic
+                    //       : imagecheck(pic),
+                    ),
+              ),
+         //   GestureDetector(onTap: (){
+
+          //    print(date);
+
+          //  },),
+         //   ),
             Positioned(
                 right: 0,
                 bottom: 0,
@@ -227,59 +334,28 @@ class imagecontainer extends StatelessWidget {
                       backgroundColor: consta.color1,
                     )))
           ]),
-          Container(
-              child: Text(
-            date,
-            style: TextStyle(color: consta.color2),
-          ))
+        //  Shimmer.fromColors(
+        //    baseColor: Colors.grey[200],
+        //    highlightColor: Colors.grey[300],
+        //    child:
+            Container(
+              //width: sizeconfig.blockSizeHorizontal * 30,
+              //height: sizeconfig.blockSizeHorizontal * 1,
+           //   child: Image.asset(("assets/icons/ina.png")),
+               child: Text(
+               date,
+               style: TextStyle(color: consta.color2),
+              // )
+            ),
+          )
         ]));
-    ;
   }
+
+
+
+
 }
 
-class imagecheck extends StatefulWidget {
-  var pic;
-  imagecheck(var pic) {
-    this.pic = pic;
-  }
-
-  @override
-  _imagecheckState createState() => _imagecheckState(pic);
-}
-
-class _imagecheckState extends State<imagecheck> {
-  var pic;
-
-  _imagecheckState(var pic) {
-    this.pic = pic;
-  }
-
-  @override
-  Widget build(BuildContext Context) {
-    print(context);
-    return Image.network(
-      pic,
-      height: sizeconfig.blockSizeHorizontal * 30,
-      width: sizeconfig.blockSizeHorizontal * 30,
-      fit: BoxFit.fill,
-    );
-    //fit(
-    //  fit: BoxFit.fill,
-
-    //  child:
-
-    //  Container(
-    // height: sizeconfig.blockSizeHorizontal * 30,
-
-    //    decoration: BoxDecoration(
-    image:
-    Image.network(pic);
-
-    //DecorationImage(image: NetworkImage(pic), fit: BoxFit.fill),
-    // )
-    // );
-  }
-}
 
 void _settingModalBottomSheet(BuildContext context) {
   print(context);
@@ -303,3 +379,5 @@ void _settingModalBottomSheet(BuildContext context) {
         );
       });
 }
+
+
