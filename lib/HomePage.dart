@@ -62,6 +62,7 @@ class _HomePageState extends State<HomePage> {
     print('Logout pressed');
     ApplicationBloc bloc = Provider.of<ApplicationBloc>(this.context);
     bloc.logout();
+    _currStation = null;
     final page = BlocProvider<LoginBloc>(
       builder: (_, bloc) => bloc ?? LoginBloc(),
       onDispose: (_, bloc) => bloc?.dispose(),
