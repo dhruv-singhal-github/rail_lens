@@ -5,6 +5,8 @@ import 'package:rail_lens/consta.dart';
 import 'package:rail_lens/models/domainimage.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:rail_lens/ViewImage.dart';
+import 'package:rail_lens/HomePage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
@@ -82,6 +84,7 @@ class gallery extends StatelessWidget {
         child: FutureBuilder<photolist>(
             future: getimage(),
             builder: (Context, snapshot) {
+
               if (snapshot.connectionState == ConnectionState.none) {
                 print("nullsnp");
                 return LoadingCircular(message: 'Connecting to our database');
@@ -113,9 +116,11 @@ class gallery extends StatelessWidget {
                 print('I have data');
                 print('There are ${snapshot.data.photos.length} photos');
                 for (int i = 0; i < snapshot.data.photos.length; i++) {
-                  FullImage.add(Image.network(
-                      "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
-                          snapshot.data.photos[i].imagename),);
+                  FullImage.add(
+                    Image.network(
+                        "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
+                            snapshot.data.photos[i].imagename),
+                  );
                   ThumbnailImage.add(Image.network(
                     "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                         snapshot.data.photos[i].imagename +
@@ -150,13 +155,14 @@ class gallery extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
                         snapshot.data.photos.length >= 1
-                            ? imagecontainer(
-                                ThumbnailImage[0], snapshot.data.photos[0].date)
-                            : imagecontainer(((defaul)), defaultDate),
+                            ? imagecontainer(ThumbnailImage[0],
+                                snapshot.data.photos[0].date, FullImage,0)
+                            : imagecontainer(
+                                ((defaul)), defaultDate, FullImage,0),
                         snapshot.data.photos.length >= 2
-                            ? imagecontainer(
-                                ThumbnailImage[1], snapshot.data.photos[1].date)
-                            : imagecontainer(((defaul)), defaultDate)
+                            ? imagecontainer(ThumbnailImage[1],
+                                snapshot.data.photos[1].date, FullImage,1)
+                            : imagecontainer(((defaul)), defaultDate, FullImage,1)
                       ],
                     ),
                     Row(
@@ -164,13 +170,14 @@ class gallery extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         snapshot.data.photos.length >= 3
-                            ? imagecontainer(
-                                ThumbnailImage[2], snapshot.data.photos[2].date)
-                            : imagecontainer(((defaul)), defaultDate),
+                            ? imagecontainer(ThumbnailImage[2],
+                                snapshot.data.photos[2].date, FullImage,2)
+                            : imagecontainer(
+                                ((defaul)), defaultDate, FullImage,2),
                         snapshot.data.photos.length >= 4
-                            ? imagecontainer(
-                                ThumbnailImage[3], snapshot.data.photos[3].date)
-                            : imagecontainer(((defaul)), defaultDate)
+                            ? imagecontainer(ThumbnailImage[3],
+                                snapshot.data.photos[3].date, FullImage,3)
+                            : imagecontainer(((defaul)), defaultDate, FullImage,3)
                       ],
                     ),
                     Row(
@@ -178,13 +185,14 @@ class gallery extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         snapshot.data.photos.length >= 5
-                            ? imagecontainer(
-                                ThumbnailImage[4], snapshot.data.photos[4].date)
-                            : imagecontainer(((defaul)), defaultDate),
+                            ? imagecontainer(ThumbnailImage[4],
+                                snapshot.data.photos[4].date, FullImage,4)
+                            : imagecontainer(
+                                ((defaul)), defaultDate, FullImage,4),
                         snapshot.data.photos.length >= 6
-                            ? imagecontainer(
-                                ThumbnailImage[5], snapshot.data.photos[5].date)
-                            : imagecontainer(((defaul)), defaultDate)
+                            ? imagecontainer(ThumbnailImage[5],
+                                snapshot.data.photos[5].date, FullImage,5)
+                            : imagecontainer(((defaul)), defaultDate, FullImage,5)
                       ],
                     )
                   ],
@@ -202,87 +210,24 @@ class gallery extends StatelessWidget {
     );
   }
 
-  Widget imageNotPresentIndicator() {
-    return imagecontainer((defaul), defaultDate);
-  }
+  //Widget imageNotPresentIndicator() {
+    //return imagecontainer((defaul), defaultDate, FullImage);
+  //}
 }
 
-
-class ShowImage extends StatelessWidget {
-  var pic,date;
-
-  ShowImage(this.pic,this.date);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-
-      //margin:
-      //   EdgeInsets.symmetric(vertical: sizeconfig.blockSizeVertical * 2.5),
-      //     padding: EdgeInsets.all(5),
-        width: sizeconfig.blockSizeHorizontal * 35,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Stack(children: [
-                DottedBorder(
-                    color: consta.color2,
-                    gap: 3,
-                    strokeWidth: 2.5,
-                    child: pic
-                  //       : imagecheck(pic),
-                ),
-                Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                        margin: EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 0),
-                        height: sizeconfig.blockSizeVertical * 9,
-                        width: sizeconfig.blockSizeHorizontal * 9,
-                        child: FloatingActionButton(
-                          onPressed: () {
-                            _settingModalBottomSheet(context);
-                          },
-                          child: const Icon(Icons.add_circle),
-                          backgroundColor: consta.color1,
-                        )))
-              ]),
-              Container(
-                  width: sizeconfig.blockSizeHorizontal * 30,
-                  height: sizeconfig.blockSizeHorizontal * 1,
-                  child: Text(
-                    date,
-                    style: TextStyle(color: consta.color2),
-                  )),
-            ]));
-  }
-}
 
 
 class imagecontainer extends StatefulWidget {
-  var pic, date;
-  imagecontainer(this.pic , this.date);
+  var pic, date, FullImage,index;
+  imagecontainer(this.pic, this.date, this.FullImage,this.index);
   @override
-  _imagecontainerState createState() => _imagecontainerState(pic, date);
+  _imagecontainerState createState() =>
+      _imagecontainerState(pic, date, FullImage,index);
 }
 
 class _imagecontainerState extends State<imagecontainer> {
-  var pic, date;
-  _imagecontainerState(this.pic, this.date) {
-    Timer countdow = new Timer(Duration(seconds: 3), (() {
-      print("timer ended");
-      setState(() {
-        print("reset state");
-        ShowImage(pic, date);
-      }
-
-      );
-    }
-    )
-    );
-  }
-
- 
+  var pic, date, FullImage,index;
+  _imagecontainerState(this.pic, this.date, this.FullImage,this.index);
 
   @override
   Widget build(BuildContext context) {
@@ -295,30 +240,28 @@ class _imagecontainerState extends State<imagecontainer> {
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Stack(children: [
-         //   Shimmer.fromColors(
-           //   baseColor: Colors.grey[200],
-           //   highlightColor: Colors.grey[300],
-           //   child:
-              GestureDetector(onTap: (){
+            //   Shimmer.fromColors(
+            //   baseColor: Colors.grey[200],
+            //   highlightColor: Colors.grey[300],
+            //   child:
+            GestureDetector(
+              onTap: () {
 
                 print(date);
-
-
+                Navigator.of(context).push(
+                    new MaterialPageRoute(builder: (context) => ViewImage(FullImage,index)));
               },
-                child: DottedBorder(
-                    color: consta.color2,
-                    gap: 3,
-                    strokeWidth: 2.5,
-                    child:pic
-                    //       : imagecheck(pic),
-                    ),
-              ),
-         //   GestureDetector(onTap: (){
+              child: DottedBorder(
+                  color: consta.color2, gap: 3, strokeWidth: 2.5, child: pic
+                  //       : imagecheck(pic),
+                  ),
+            ),
+            //   GestureDetector(onTap: (){
 
-          //    print(date);
+            //    print(date);
 
-          //  },),
-         //   ),
+            //  },),
+            //   ),
             Positioned(
                 right: 0,
                 bottom: 0,
@@ -327,6 +270,7 @@ class _imagecontainerState extends State<imagecontainer> {
                     height: sizeconfig.blockSizeVertical * 9,
                     width: sizeconfig.blockSizeHorizontal * 9,
                     child: FloatingActionButton(
+                      heroTag: null,
                       onPressed: () {
                         _settingModalBottomSheet(context);
                       },
@@ -334,28 +278,23 @@ class _imagecontainerState extends State<imagecontainer> {
                       backgroundColor: consta.color1,
                     )))
           ]),
-        //  Shimmer.fromColors(
-        //    baseColor: Colors.grey[200],
-        //    highlightColor: Colors.grey[300],
-        //    child:
-            Container(
-              //width: sizeconfig.blockSizeHorizontal * 30,
-              //height: sizeconfig.blockSizeHorizontal * 1,
-           //   child: Image.asset(("assets/icons/ina.png")),
-               child: Text(
-               date,
-               style: TextStyle(color: consta.color2),
+          //  Shimmer.fromColors(
+          //    baseColor: Colors.grey[200],
+          //    highlightColor: Colors.grey[300],
+          //    child:
+          Container(
+            //width: sizeconfig.blockSizeHorizontal * 30,
+            //height: sizeconfig.blockSizeHorizontal * 1,
+            //   child: Image.asset(("assets/icons/ina.png")),
+            child: Text(
+              date,
+              style: TextStyle(color: consta.color2),
               // )
             ),
           )
         ]));
   }
-
-
-
-
 }
-
 
 void _settingModalBottomSheet(BuildContext context) {
   print(context);
@@ -379,5 +318,3 @@ void _settingModalBottomSheet(BuildContext context) {
         );
       });
 }
-
-
