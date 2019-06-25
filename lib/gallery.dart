@@ -16,8 +16,8 @@ import 'reusable_ui.dart';
 
 class gallery extends StatelessWidget {
   var loaded = 0;
-  var FullImage = new List();
-  var ThumbnailImage = new List();
+  List<Image> FullImage = new List();
+  List<Image> ThumbnailImage = new List();
   var StationCode = null;
   var imagedomain = null;
   var context;
@@ -226,7 +226,8 @@ class imagecontainer extends StatefulWidget {
 }
 
 class _imagecontainerState extends State<imagecontainer> {
-  var pic, date, FullImage,index;
+  var pic, date, index;
+  List<Image> FullImage;
   _imagecontainerState(this.pic, this.date, this.FullImage,this.index);
 
   @override
