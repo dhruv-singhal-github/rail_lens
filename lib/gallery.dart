@@ -10,6 +10,8 @@ import 'package:rail_lens/HomePage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+//import 'package:image_picker/image_picker.dart';
 
 import 'package:rail_lens/models/photolist.dart';
 import 'reusable_ui.dart';
@@ -273,7 +275,7 @@ class _imagecontainerState extends State<imagecontainer> {
                     child: FloatingActionButton(
                       heroTag: null,
                       onPressed: () {
-                        _settingModalBottomSheet(context);
+                        _settingModalBottomSheet();
                       },
                       child: const Icon(Icons.add_circle),
                       backgroundColor: consta.color1,
@@ -296,26 +298,49 @@ class _imagecontainerState extends State<imagecontainer> {
         ]));
   }
 }
+class _settingModalBottomSheet extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState(){
+    return _settingModalBottomSheetState();
+  }
+}
+class _settingModalBottomSheetState extends State<_settingModalBottomSheet> {
 
-void _settingModalBottomSheet(BuildContext context) {
-  print(context);
-  showModalBottomSheet(
-      context: context,
-      builder: (context) {
+
+  File _image;
+  Future getImage(bool isCamera) async{
+    File image;
+    if(isCamera){
+//      image = await ImagePicker.pickImage(source: ImageSource.camera);
+    }else{
+//      image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    }
+    setState((){
+      _image = image;
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+
         return Container(
           child: new Wrap(
             children: <Widget>[
               new ListTile(
                   leading: new Icon(Icons.music_note),
                   title: new Text('Gallery'),
-                  onTap: () => {}),
+                  onTap: () => {
+                    getImage(false)
+//                      print('Lol tapped');
+                  }),
               new ListTile(
                 leading: new Icon(Icons.videocam),
                 title: new Text('Camera'),
-                onTap: () => {},
+                onTap: () => {getImage(true)},
               ),
             ],
           ),
         );
-      });
+      }
+
+
 }

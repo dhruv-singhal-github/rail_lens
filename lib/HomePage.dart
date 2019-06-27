@@ -137,11 +137,12 @@ class _ContentState extends State<_Content> {
                             );
                           },
                           iconSize: 40,iconDisabledColor: consta.color1,iconEnabledColor: consta.color2,
-                          hint: Text('Select a Station'),
+                          hint: Text('Select a Station', softWrap: true,),
                           value: _currStation,
                           style: TextStyle(
                               color: consta.color2,
                               fontSize: 18,
+
                               ),
                           items: Provider.of<ApplicationBloc>(context)
                               .cachedStationList
