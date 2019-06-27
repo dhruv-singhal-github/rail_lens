@@ -159,8 +159,14 @@ class ChangePasswordBloc extends BaseBloc with Validator {
   final _confirmPasswordController = PublishSubject<String>();
   final _oldPasswordController = PublishSubject<String>();
 
+  final ApplicationBloc _appBlocRef;
+
   String _lastPassword = '';
   final RailApi _api = RailApi();
+
+  ChangePasswordBloc(this._appBlocRef){
+    _usernameFuture = _appBlocRef.getCredentials().then((cred)=>cred.username);
+  }
 
   Stream<String> get newPassword =>
       _newPasswordController.stream.transform(passwordValidator);
@@ -173,19 +179,14 @@ class ChangePasswordBloc extends BaseBloc with Validator {
       }).transform(confPassValidator);
 
   //TODO: Change so that it accesses username saved from the database
-  String _username = 'a';
+  Future<String> _usernameFuture;
   Stream<bool> get validEntries =>
       confirmPassword.map((list) => list[list.length - 1]);
 
+
   Stream<AuthorizationModel> get authorizationStream =>
       confirmPassword.asyncMap<Map<String,String>>((passList) {
-        _lastPassword = passList[0];
-        var credMap = Map<String, String>();
-        credMap['username'] = _username;
-        credMap['oldpass'] = passList[0];
-        credMap['newpass'] = passList[1];
-        print('Sending this parameter map -> $credMap');
-        return credMap;
+        return _credentialMap(passList);
       }).asyncMap<AuthorizationModel>((credMap) {
         return _api.changePassword(credMap['username'], credMap['oldpass'], credMap['newpass']);
       });
@@ -197,6 +198,15 @@ class ChangePasswordBloc extends BaseBloc with Validator {
   Function(String) get confirmPassChanged =>
       _confirmPasswordController.sink.add;
 
+  Future<Map<String, String>> _credentialMap(List passList) async{
+    _lastPassword = passList[0];
+    var credMap = Map<String, String>();
+    credMap['username'] = await _usernameFuture;
+    credMap['oldpass'] = passList[0];
+    credMap['newpass'] = passList[1];
+    print('Sending this parameter map -> $credMap');
+    return credMap;
+  }
   @override
   void dispose() {
     print('Disposing ChangePassword Bloc');
@@ -204,6 +214,8 @@ class ChangePasswordBloc extends BaseBloc with Validator {
     _newPasswordController.close();
     _confirmPasswordController.close();
   }
+
+
 }
 
 class UploadBloc extends BaseBloc {

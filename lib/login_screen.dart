@@ -125,7 +125,7 @@ class _LoginPageState extends State<LoginScreen> {
         print('Open change default password screen');
 
         final page = BlocProvider<ChangePasswordBloc>(
-          builder: (_, bloc) => bloc ?? ChangePasswordBloc(),
+          builder: (_, bloc) => bloc ?? ChangePasswordBloc(Provider.of<ApplicationBloc>(context)),
           onDispose: (_, bloc) => bloc?.dispose(),
           child: ChangePasswordScreen(mandatory: true,),
         );

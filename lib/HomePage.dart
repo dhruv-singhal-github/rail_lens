@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
           GestureDetector(
             onTapDown: (_details) {
               final page = BlocProvider<ChangePasswordBloc>(
-                builder: (_, bloc) => bloc ?? ChangePasswordBloc(),
+                builder: (_, bloc) => bloc ?? ChangePasswordBloc(Provider.of<ApplicationBloc>(context)),
                 onDispose: (_, bloc) => bloc?.dispose(),
                 child: ChangePasswordScreen(mandatory: false,),
               );
@@ -82,11 +82,29 @@ class _Content extends StatefulWidget {
 }
 
 class _ContentState extends State<_Content> {
+List<DropdownMenuItem<Station>> _stationList;
 
-
+  @override
+  void didChangeDependencies() {
+    _stationList = Provider.of<ApplicationBloc>(context)
+        .cachedStationList
+        .map(
+          (station) => DropdownMenuItem<Station>(
+        value: station,
+        child: SizedBox(
+          child: Text(
+            station.stnName,
+          ),
+        ),
+      ),
+    )
+        .toList();
+    _currStation = _stationList[0].value;
+  }
   @override
   Widget build(BuildContext context) {
     print('val of curr station is ${_currStation?.stnName}');
+
     sizeconfig().init(context);
     return Container(
         decoration: BoxDecoration(
@@ -144,19 +162,7 @@ class _ContentState extends State<_Content> {
                               fontSize: 18,
 
                               ),
-                          items: Provider.of<ApplicationBloc>(context)
-                              .cachedStationList
-                              .map(
-                                (station) => DropdownMenuItem<Station>(
-                                      value: station,
-                                      child: SizedBox(
-                                        child: Text(
-                                          station.stnName,
-                                        ),
-                                      ),
-                                    ),
-                              )
-                              .toList(),
+                          items: _stationList,
                         ),
                       ),
 //                      Image.asset(
@@ -177,6 +183,7 @@ class _ContentState extends State<_Content> {
           ],
         ));
   }
+
 }
 
 class iconplate extends StatelessWidget {

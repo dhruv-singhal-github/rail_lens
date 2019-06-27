@@ -136,7 +136,7 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
           photoDate:
           '${_selectedDate.year}/${_selectedDate.month}/${_selectedDate.day}',
           cr: cred,
-          image: widget.newImage),
+          imageFile: widget.newImage),
       builder: (context, snapshot){
 
         if (snapshot.connectionState == ConnectionState.none) {

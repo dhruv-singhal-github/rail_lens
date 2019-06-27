@@ -30,15 +30,15 @@ class RailApi {
   Future<AuthorizationModel> login(String username, String password) async {
     print('Login Basic: ${base64.encode(utf8.encode('$username:$password'))}');
     AuthorizationModel authorizationModel = await _client
-        .post(Uri.parse(_url + _login),
-            headers: {
-              'accept': 'application/json',
-              'Content-type': 'application/x-www-form-urlencoded',
-              'Authorization':
-                  'Basic ${base64.encode(utf8.encode('$username:$password'))}',
-            },
-            //TODO: Fix possible security error
-            body: 'name=' + username + '&password=' + password)
+        .post(
+          Uri.parse(_url + _login),
+          headers: {
+            'accept': 'application/json',
+            'Content-type': 'application/x-www-form-urlencoded',
+            'Authorization':
+                'Basic ${base64.encode(utf8.encode('$username:$password'))}',
+          },
+        )
         .timeout(_timeOutDuration)
         .then((response) => response.body)
         .then((body) {
@@ -57,14 +57,13 @@ class RailApi {
     AuthorizationModel authorizationModel = await _client
         .post(Uri.parse(_url + _changePassword),
             headers: {
-              'accept': 'application/json',
               'Content-type': 'application/x-www-form-urlencoded',
               'Authorization':
                   'Basic ${base64.encode(utf8.encode('$username:$oldPassword'))}',
             },
             //TODO: Fix possible security error
             body:
-                'name=$username&password=$oldPassword&newpassword=$newPassword')
+                'newpassword=$newPassword')
         .timeout(_timeOutDuration)
         .then((response) => response.body)
         .then((body) {
@@ -74,8 +73,8 @@ class RailApi {
         .then(json.decode)
         .then((json) {
           print('parsing to Json');
-      return AuthorizationModel.fromJson(json);
-    } );
+          return AuthorizationModel.fromJson(json);
+        });
     print('Sending $authorizationModel back to caller');
     return authorizationModel;
   }
@@ -129,8 +128,7 @@ class RailApi {
       @required int sno,
       @required String photoDate,
       @required Credentials cr,
-      @required File image}) async {
-
+      @required File imageFile}) async {
     print(
         'Upload Basic: ${base64.encode(utf8.encode('${cr.username}:${cr.username}'))}');
     var request = new MultipartRequest('POST', Uri.parse(_url + _upload));
@@ -141,7 +139,7 @@ class RailApi {
     request.headers['accept'] = 'application/json';
 
 //    var filepath = await _setup_testing();
-    var filepath = image.path;
+    var filepath = imageFile.path;
     request.fields['stncode'] = station.stnCode;
     request.fields['subinitid'] = subInitId.toString();
     request.fields['sno'] = sno.toString();
@@ -149,28 +147,26 @@ class RailApi {
     request.fields['photodate'] = photoDate;
     request.files.add(
       await MultipartFile.fromPath('file', filepath,
-          filename: 'image.txt',
-          contentType: MediaType('image', 'jpeg')),
+          filename: 'image.txt', contentType: MediaType('image', 'jpeg')),
     );
 
-
-    return await _client.send(request)
-    .timeout(_timeOutDuration)
-    .then((response){
+    return await _client
+        .send(request)
+        .timeout(_timeOutDuration)
+        .then((response) {
       print('Response code is ${response.statusCode}');
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print('Yay response code is 200');
       }
       return response.stream.transform(utf8.decoder);
-    }).catchError((error){
+    }).catchError((error) {
       print('There was an error!');
       print(error);
     });
-
   }
 }
 
-Future<String> _setup_testing() async{
+Future<String> _setup_testing() async {
   final directory = await getApplicationDocumentsDirectory();
 //  final file = File('${directory.path}/image.txt');
 //  file.writeAsStringSync('testing lol');
