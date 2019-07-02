@@ -11,7 +11,8 @@ import 'application_bloc.dart';
 import 'bloc_provider.dart';
 import 'change_password_screen.dart';
 import 'models/model.dart';
-Station _currStation ;
+
+Station _currStation;
 
 //TODO: App bar station name size constraint check if scalable
 class HomePage extends StatefulWidget {
@@ -31,16 +32,23 @@ class _HomePageState extends State<HomePage> {
           GestureDetector(
             onTapDown: (_details) {
               final page = BlocProvider<ChangePasswordBloc>(
-                builder: (_, bloc) => bloc ?? ChangePasswordBloc(Provider.of<ApplicationBloc>(context)),
+                builder: (_, bloc) =>
+                    bloc ??
+                    ChangePasswordBloc(Provider.of<ApplicationBloc>(context)),
                 onDispose: (_, bloc) => bloc?.dispose(),
-                child: ChangePasswordScreen(mandatory: false,),
+                child: ChangePasswordScreen(
+                  mandatory: false,
+                ),
               );
               Navigator.push(this.context,
                   MaterialPageRoute(builder: (context) {
-                    return page;
-                  }));
+                return page;
+              }));
             },
-            child: Center(child: Text('Change Password',)),
+            child: Center(
+                child: Text(
+              'Change Password',
+            )),
           ),
           IconButton(
             icon: Image.asset(
@@ -57,7 +65,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
 
   void logout() {
     print('Logout pressed');
@@ -82,7 +89,7 @@ class _Content extends StatefulWidget {
 }
 
 class _ContentState extends State<_Content> {
-List<DropdownMenuItem<Station>> _stationList;
+  List<DropdownMenuItem<Station>> _stationList;
 
   @override
   void didChangeDependencies() {
@@ -90,17 +97,18 @@ List<DropdownMenuItem<Station>> _stationList;
         .cachedStationList
         .map(
           (station) => DropdownMenuItem<Station>(
-        value: station,
-        child: SizedBox(
-          child: Text(
-            station.stnName,
-          ),
-        ),
-      ),
-    )
+                value: station,
+                child: SizedBox(
+                  child: Text(
+                    station.stnName,
+                  ),
+                ),
+              ),
+        )
         .toList();
     _currStation = _stationList[0].value;
   }
+
   @override
   Widget build(BuildContext context) {
     print('val of curr station is ${_currStation?.stnName}');
@@ -144,8 +152,7 @@ List<DropdownMenuItem<Station>> _stationList;
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 5),
                         width: 220,
-                        child:
-                        DropdownButton<Station>(
+                        child: DropdownButton<Station>(
                           onChanged: (selectedStation) {
                             setState(
                               () {
@@ -154,14 +161,18 @@ List<DropdownMenuItem<Station>> _stationList;
                               },
                             );
                           },
-                          iconSize: 40,iconDisabledColor: consta.color1,iconEnabledColor: consta.color2,
-                          hint: Text('Select a Station', softWrap: true,),
+                          iconSize: 40,
+                          iconDisabledColor: consta.color1,
+                          iconEnabledColor: consta.color2,
+                          hint: Text(
+                            'Select a Station',
+                            softWrap: true,
+                          ),
                           value: _currStation,
                           style: TextStyle(
-                              color: consta.color2,
-                              fontSize: 18,
-
-                              ),
+                            color: consta.color2,
+                            fontSize: 18,
+                          ),
                           items: _stationList,
                         ),
                       ),
@@ -183,7 +194,6 @@ List<DropdownMenuItem<Station>> _stationList;
           ],
         ));
   }
-
 }
 
 class iconplate extends StatelessWidget {
@@ -211,8 +221,8 @@ class iconplate extends StatelessWidget {
                             ),
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Station Facade", 74, 1,_currStation.stnCode)));
+                                  builder: (context) => Gallery(
+                                      "Station Facade", 74, 1, _currStation)));
                             }),
                         "Station Facade"),
                     iconwdg(
@@ -223,8 +233,11 @@ class iconplate extends StatelessWidget {
                             ),
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Circulating Area", 75, 2,_currStation.stnCode)));
+                                  builder: (context) => Gallery(
+                                      "Circulating Area",
+                                      75,
+                                      2,
+                                      _currStation)));
                             }),
                         "Circulating Area"),
                     iconwdg(
@@ -233,132 +246,135 @@ class iconplate extends StatelessWidget {
                                 color: consta.color1),
                             onPressed: () {
                               Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Illumination", 76, 1,_currStation.stnCode)));
+                                  builder: (context) => Gallery(
+                                      "Illumination", 76, 1, _currStation)));
                             }),
                         "Illumination"),
-                  ]),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    iconwdg(
-                        IconButton(
-                            icon: Image.asset(
-                              "assets/icons/waitingroom.png",
-                              color: consta.color1,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Waiting Room", 77, 2,_currStation.stnCode)));
-                            }),
-                        "Waiting Room"),
-                    iconwdg(
-                        IconButton(
-                            icon: Image.asset(
-                              "assets/icons/platform.png",
-                              color: consta.color1,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Platform", 78, 1,_currStation.stnCode)));
-                            }),
-                        "Platform"),
-                    iconwdg(
-                        IconButton(
-                            icon: Image.asset(
-                              "assets/icons/food.png",
-                              color: consta.color1,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Refreshment Rooms", 80, 2,_currStation.stnCode)));
-                            }),
-                        "Refreshment Rooms"),
                   ]),
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <
                   Widget>[
                 iconwdg(
                     IconButton(
-                        icon: Image.asset("assets/icons/taj.png",
-                            color: consta.color1),
+                        icon: Image.asset(
+                          "assets/icons/waitingroom.png",
+                          color: consta.color1,
+                        ),
                         onPressed: () {
                           Navigator.of(context).push(new MaterialPageRoute(
-                              builder: (context) =>
-                                  gallery("Local Heritage", 79, 1,_currStation.stnCode)));
+                              builder: (context) => Gallery(
+                                  "Waiting Room", 77, 2, _currStation)));
                         }),
-                    "Local Heritage"),
+                    "Waiting Room"),
                 iconwdg(
                     IconButton(
                         icon: Image.asset(
-                          "assets/icons/stair.png",
+                          "assets/icons/platform.png",
                           color: consta.color1,
                         ),
                         onPressed: () {
                           Navigator.of(context).push(new MaterialPageRoute(
                               builder: (context) =>
-                                  gallery("Bridges and Escalators", 81, 2,_currStation.stnCode)));
+                                  Gallery("Platform", 78, 1, _currStation)));
                         }),
-                    "Bridges and Escalators"),
+                    "Platform"),
                 iconwdg(
                     IconButton(
-                        icon: Image.asset("assets/icons/elevator.png",
-                            color: consta.color1),
+                        icon: Image.asset(
+                          "assets/icons/food.png",
+                          color: consta.color1,
+                        ),
                         onPressed: () {
                           Navigator.of(context).push(new MaterialPageRoute(
-                              builder: (context) => gallery("Lifts", 81, 1,_currStation.stnCode)));
+                              builder: (context) => Gallery(
+                                  "Refreshment Rooms", 80, 2, _currStation)));
                         }),
-                    "Lifts"),
+                    "Refreshment Rooms"),
               ]),
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     iconwdg(
                         IconButton(
-                            icon: Image.asset(
-                              "assets/icons/info.png",
-                              color: consta.color1,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Information Displays", 82, 2,_currStation.stnCode)));
-                            }),
-                        "Information Displays"),
-                    iconwdg(
-                        IconButton(
-                            icon: Image.asset(
-                              "assets/icons/mslefemsle.png",
-                              color: consta.color1,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(new MaterialPageRoute(
-                                  builder: (context) =>
-                                      gallery("Restrooms", 84, 1,_currStation.stnCode)));
-                            }),
-                        "Restrooms"),
-                    iconwdg(
-                        IconButton(
-                            icon: Image.asset("assets/icons/gear.png",
+                            icon: Image.asset("assets/icons/taj.png",
                                 color: consta.color1),
                             onPressed: () {
-                              if (_currStation?.stnCode == null) {
-                                Toast.show("Select a Staion",context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
-
-                              }
-
-                              else {
-                                Navigator.of(context).push(
-                                    new MaterialPageRoute(
-                                        builder: (context) =>
-                                            gallery("Others", 83, 2,
-                                                _currStation.stnCode)));
-                              }
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (context) => Gallery(
+                                      "Local Heritage", 79, 1, _currStation)));
                             }),
-                        "Others"),
-                  ])
+                        "Local Heritage"),
+                    iconwdg(
+                        IconButton(
+                            icon: Image.asset(
+                              "assets/icons/stair.png",
+                              color: consta.color1,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (context) => Gallery(
+                                      "Bridges and Escalators",
+                                      81,
+                                      2,
+                                      _currStation)));
+                            }),
+                        "Bridges and Escalators"),
+                    iconwdg(
+                        IconButton(
+                            icon: Image.asset("assets/icons/elevator.png",
+                                color: consta.color1),
+                            onPressed: () {
+                              Navigator.of(context).push(new MaterialPageRoute(
+                                  builder: (context) =>
+                                      Gallery("Lifts", 81, 1, _currStation)));
+                            }),
+                        "Lifts"),
+                  ]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <
+                  Widget>[
+                iconwdg(
+                    IconButton(
+                        icon: Image.asset(
+                          "assets/icons/info.png",
+                          color: consta.color1,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (context) => Gallery(
+                                  "Information Displays",
+                                  82,
+                                  2,
+                                  _currStation)));
+                        }),
+                    "Information Displays"),
+                iconwdg(
+                    IconButton(
+                        icon: Image.asset(
+                          "assets/icons/mslefemsle.png",
+                          color: consta.color1,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (context) =>
+                                  Gallery("Restrooms", 84, 1, _currStation)));
+                        }),
+                    "Restrooms"),
+                iconwdg(
+                    IconButton(
+                        icon: Image.asset("assets/icons/gear.png",
+                            color: consta.color1),
+                        onPressed: () {
+                          if (_currStation?.stnCode == null) {
+                            Toast.show("Select a Staion", context,
+                                duration: Toast.LENGTH_SHORT,
+                                gravity: Toast.BOTTOM);
+                          } else {
+                            Navigator.of(context).push(new MaterialPageRoute(
+                                builder: (context) =>
+                                    Gallery("Others", 83, 2, _currStation)));
+                          }
+                        }),
+                    "Others"),
+              ])
             ],
           ),
         ));

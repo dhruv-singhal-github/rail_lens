@@ -8,10 +8,7 @@ const int _jpgQuality = 90;
 
 
 //Use the function below to call compressImageFile
-//
-//Future<void> compressImage(File originalImageFile, File fileToSaveTo) {
-//  return compute(compressImageFile, [originalImageFile, fileToSaveTo]);
-//}
+
 
 ///Use compute to call this function in another isolate
 ///The first value in filePair is the original image file

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:rail_lens/sizeconfig.dart';
 import 'package:rail_lens/consta.dart';
@@ -14,40 +16,26 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:rail_lens/models/photolist.dart';
+import 'models/model.dart';
 import 'reusable_ui.dart';
+import 'file_compression.dart';
+import 'package:path/path.dart' as p;
 
-class gallery extends StatelessWidget {
-  var loaded = 0;
-  List<Image> FullImage = new List();
-  List<Image> ThumbnailImage = new List();
-  var StationCode = null;
-  var imagedomain = null;
-  var context;
-  var imagecode = null;
-  var _isChecked = false;
-  var colorscheme = 1;
-  var username = 'a';
-  String password = 'a';
-  var bAuth = 'Basic ' + base64Encode(utf8.encode('a:a'));
+class Gallery extends StatefulWidget {
+//  var loaded = 0;
+  final Station station;
+  String get stationCode => station.stnCode;
+  final String imageDomain;
+//  var context;
+  final int imageCode;
 
-  String defaultDate = "Unavailable";
+  var colorScheme = 1;
+
   var colour = consta.color1;
   var colour2 = consta.color2;
 
-  Image defaul = Image.asset(
-    "assets/icons/ina.png",
-    height: sizeconfig.blockSizeHorizontal * 30,
-    width: sizeconfig.blockSizeHorizontal * 30,
-    fit: BoxFit.fill,
-  );
-
-  gallery(imagedomain, imagecode, colorscheme, StationCode) {
-    this.imagedomain = imagedomain;
-    this.imagecode = imagecode;
-    this.colorscheme = colorscheme;
-    this.StationCode = StationCode;
-
-    if (colorscheme == 1) {
+  Gallery(this.imageDomain, this.imageCode, this.colorScheme, this.station) {
+    if (colorScheme == 1) {
       colour = consta.color1;
       colour2 = consta.color2;
     } else {
@@ -56,10 +44,34 @@ class gallery extends StatelessWidget {
     }
   }
 
-  Future<photolist> getimage() async {
+  @override
+  State<StatefulWidget> createState() {
+    return GalleryState();
+  }
+}
+
+class GalleryState extends State<Gallery> {
+  List<Image> fullImage = new List();
+  List<Image> thumbnailImage = new List();
+  List<num> imageSno = new List();
+  final String defaultDate = "Unavailable";
+  final Image defaultImage = Image.asset(
+    "assets/icons/ina.png",
+    height: sizeconfig.blockSizeHorizontal * 30,
+    width: sizeconfig.blockSizeHorizontal * 30,
+    fit: BoxFit.fill,
+  );
+  //TODO: remove hardcoded credentials
+  final String bAuth = 'Basic ' + base64Encode(utf8.encode('a:a'));
+  //  var _isChecked = false;
+
+//  var username = 'a';
+//  String password = 'a';
+
+  Future<photolist> getImages() async {
     print("Sending request: 400");
     String url =
-        "http://samvad.cris.org.in/stationimages/rest/stationimages/stnimages/$StationCode/$imagecode";
+        "http://samvad.cris.org.in/stationimages/rest/stationimages/stnimages/${widget.stationCode}/${widget.imageCode}";
     final response = await http.get(url, headers: {'authorization': bAuth});
 
     if (response.statusCode == 200) {
@@ -71,22 +83,23 @@ class gallery extends StatelessWidget {
     }
   }
 
+  File _selectedImage;
+
   @override
   Widget build(context) {
     sizeconfig().init(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(imagedomain),
+        title: Text(widget.imageDomain),
         backgroundColor: consta.color1,
       ),
       body: Container(
         width: sizeconfig.blockSizeHorizontal * 100,
         height: sizeconfig.blockSizeVertical * 100,
         child: FutureBuilder<photolist>(
-            future: getimage(),
+            future: getImages(),
             builder: (Context, snapshot) {
-
               if (snapshot.connectionState == ConnectionState.none) {
                 print("nullsnp");
                 return LoadingCircular(message: 'Connecting to our database');
@@ -118,12 +131,14 @@ class gallery extends StatelessWidget {
                 print('I have data');
                 print('There are ${snapshot.data.photos.length} photos');
                 for (int i = 0; i < snapshot.data.photos.length; i++) {
-                  FullImage.add(
+                  print('Detected sno ${snapshot.data.photos[i].sno}');
+                  imageSno.add(snapshot.data.photos[i].sno);
+                  fullImage.add(
                     Image.network(
                         "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                             snapshot.data.photos[i].imagename),
                   );
-                  ThumbnailImage.add(Image.network(
+                  thumbnailImage.add(Image.network(
                     "https://www.raildrishti.in/raildrishti/IRDBSubInitFileDownload?fname=" +
                         snapshot.data.photos[i].imagename +
                         "&thumb=y",
@@ -157,14 +172,23 @@ class gallery extends StatelessWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
                         snapshot.data.photos.length >= 1
-                            ? imagecontainer(ThumbnailImage[0],
-                                snapshot.data.photos[0].date, FullImage,0)
-                            : imagecontainer(
-                                ((defaul)), defaultDate, FullImage,0),
+                            ? ImageContainer(
+                                thumbnailImage[0],
+                                snapshot.data.photos[0].date,
+                                fullImage,
+                                0,
+                                getImageFromUser)
+                            : ImageContainer(((defaultImage)), defaultDate,
+                                fullImage, 0, getImageFromUser),
                         snapshot.data.photos.length >= 2
-                            ? imagecontainer(ThumbnailImage[1],
-                                snapshot.data.photos[1].date, FullImage,1)
-                            : imagecontainer(((defaul)), defaultDate, FullImage,1)
+                            ? ImageContainer(
+                                thumbnailImage[1],
+                                snapshot.data.photos[1].date,
+                                fullImage,
+                                1,
+                                getImageFromUser)
+                            : ImageContainer(((defaultImage)), defaultDate,
+                                fullImage, 1, getImageFromUser)
                       ],
                     ),
                     Row(
@@ -172,14 +196,23 @@ class gallery extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         snapshot.data.photos.length >= 3
-                            ? imagecontainer(ThumbnailImage[2],
-                                snapshot.data.photos[2].date, FullImage,2)
-                            : imagecontainer(
-                                ((defaul)), defaultDate, FullImage,2),
+                            ? ImageContainer(
+                                thumbnailImage[2],
+                                snapshot.data.photos[2].date,
+                                fullImage,
+                                2,
+                                getImageFromUser)
+                            : ImageContainer(((defaultImage)), defaultDate,
+                                fullImage, 2, getImageFromUser),
                         snapshot.data.photos.length >= 4
-                            ? imagecontainer(ThumbnailImage[3],
-                                snapshot.data.photos[3].date, FullImage,3)
-                            : imagecontainer(((defaul)), defaultDate, FullImage,3)
+                            ? ImageContainer(
+                                thumbnailImage[3],
+                                snapshot.data.photos[3].date,
+                                fullImage,
+                                3,
+                                getImageFromUser)
+                            : ImageContainer(((defaultImage)), defaultDate,
+                                fullImage, 3, getImageFromUser)
                       ],
                     ),
                     Row(
@@ -187,14 +220,23 @@ class gallery extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         snapshot.data.photos.length >= 5
-                            ? imagecontainer(ThumbnailImage[4],
-                                snapshot.data.photos[4].date, FullImage,4)
-                            : imagecontainer(
-                                ((defaul)), defaultDate, FullImage,4),
+                            ? ImageContainer(
+                                thumbnailImage[4],
+                                snapshot.data.photos[4].date,
+                                fullImage,
+                                4,
+                                getImageFromUser)
+                            : ImageContainer(((defaultImage)), defaultDate,
+                                fullImage, 4, getImageFromUser),
                         snapshot.data.photos.length >= 6
-                            ? imagecontainer(ThumbnailImage[5],
-                                snapshot.data.photos[5].date, FullImage,5)
-                            : imagecontainer(((defaul)), defaultDate, FullImage,5)
+                            ? ImageContainer(
+                                thumbnailImage[5],
+                                snapshot.data.photos[5].date,
+                                fullImage,
+                                5,
+                                getImageFromUser)
+                            : ImageContainer(((defaultImage)), defaultDate,
+                                fullImage, 5, getImageFromUser)
                       ],
                     )
                   ],
@@ -213,24 +255,70 @@ class gallery extends StatelessWidget {
   }
 
   //Widget imageNotPresentIndicator() {
-    //return imagecontainer((defaul), defaultDate, FullImage);
+  //return imagecontainer((defaul), defaultDate, FullImage);
   //}
+
+  Future<void> getImageFromUser(
+      bool isCamera, Image prevImage, int index) async {
+    File image;
+    if (isCamera) {
+      image = await ImagePicker.pickImage(source: ImageSource.camera);
+    } else {
+      image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    }
+
+    //TODO: This is inefficient!!
+    _selectedImage = image;
+    print('Image we got is ${image}');
+
+    var tempDir = await getTemporaryDirectory();
+    tempDir = await tempDir.createTemp('compressed');
+    File newFile = File('${tempDir.path}/${p.basename(image.path)}');
+    compressImage(image, newFile);
+    num sno;
+    if (imageSno.length <= index) {
+      sno = imageSno.length;
+    } else {
+      sno = imageSno[index];
+    }
+    showDialog(
+      context: this.context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+
+          title: new Text('You sure hon?'),
+          content: new ChangeImageConfirmation(
+            prevImage: prevImage,
+            newImage: _selectedImage,
+            station: widget.station,
+            subInitId: widget.imageCode,
+            sno: sno,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> compressImage(File originalImageFile, File fileToSaveTo) {
+    return compute(compressImageFile, [originalImageFile, fileToSaveTo]);
+  }
 }
 
-
-
-class imagecontainer extends StatefulWidget {
-  var pic, date, FullImage,index;
-  imagecontainer(this.pic, this.date, this.FullImage,this.index);
+class ImageContainer extends StatefulWidget {
+  final pic, date, fullImage, index, getImageFromUser;
+  ImageContainer(
+      this.pic, this.date, this.fullImage, this.index, this.getImageFromUser);
   @override
-  _imagecontainerState createState() =>
-      _imagecontainerState(pic, date, FullImage,index);
+  _ImageContainerState createState() =>
+      _ImageContainerState(pic, date, fullImage, index, getImageFromUser);
 }
 
-class _imagecontainerState extends State<imagecontainer> {
+class _ImageContainerState extends State<ImageContainer> {
   var pic, date, index;
-  List<Image> FullImage;
-  _imagecontainerState(this.pic, this.date, this.FullImage,this.index);
+  List<Image> fullImage;
+  Function(bool isCamera, Image prevImage, int index) getImageFromUser;
+  _ImageContainerState(
+      this.pic, this.date, this.fullImage, this.index, this.getImageFromUser);
 
   @override
   Widget build(BuildContext context) {
@@ -249,10 +337,9 @@ class _imagecontainerState extends State<imagecontainer> {
             //   child:
             GestureDetector(
               onTap: () {
-
                 print(date);
-                Navigator.of(context).push(
-                    new MaterialPageRoute(builder: (context) => ViewImage(FullImage,index)));
+                Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (context) => ViewImage(fullImage, index)));
               },
               child: DottedBorder(
                   color: consta.color2, gap: 3, strokeWidth: 2.5, child: pic
@@ -297,29 +384,6 @@ class _imagecontainerState extends State<imagecontainer> {
           )
         ]));
   }
-}
-
-
-
-
-
-  File _image = null;
-
-  Future getImage(bool isCamera) async {
-    File image;
-    if (isCamera) {
-      image = await ImagePicker.pickImage(source: ImageSource.camera);
-    }
-
-    else {
-      image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    }
-
-      _image = image;
-      print(image);
-
-
-  }
 
   void _settingModalBottom(BuildContext context) {
     print(context);
@@ -329,20 +393,18 @@ class _imagecontainerState extends State<imagecontainer> {
           return Container(
             child: new Wrap(
               children: <Widget>[
-
-
                 new ListTile(
                     leading: new Icon(Icons.folder),
                     title: new Text('Gallery'),
-                    onTap: () => {getImage(false)}),
+                    onTap: () => {getImageFromUser(false, pic, index)}),
                 new ListTile(
                   leading: new Icon(Icons.videocam),
                   title: new Text('Camera'),
-                  onTap: () => {getImage(true)},
+                  onTap: () => {getImageFromUser(true, pic, index)},
                 ),
               ],
             ),
           );
         });
   }
-
+}
