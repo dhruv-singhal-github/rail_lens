@@ -92,6 +92,7 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
 
   @override
   Widget build(BuildContext context) {
+    print('File to upload is ${widget.newImage}');
     return SizedBox(
       width: 500,
       height: 500,

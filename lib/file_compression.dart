@@ -23,6 +23,7 @@ void compressImageFile (List<File> filePair) {
   if (size > _imageSizeLimit) {
     resizeFactor = size / _imageSizeLimit;
   }
+  print('resize factor is $resizeFactor');
   int newHeight = image.height ~/ resizeFactor;
   var resizedImage = impkg.copyResize(image, height: newHeight);
   newImageFile

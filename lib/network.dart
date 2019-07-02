@@ -17,7 +17,7 @@ class RailApi {
   static const String _upload = 'uploadimage';
   static const String _downloadImageList = 'stnimages';
 
-  static const Duration _timeOutDuration = Duration(milliseconds: 15000);
+  static const Duration _timeOutDuration = Duration(seconds: 60);
   static final RailApi _railApi = RailApi._internal();
 
   factory RailApi() {

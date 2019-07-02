@@ -268,13 +268,13 @@ class GalleryState extends State<Gallery> {
     }
 
     //TODO: This is inefficient!!
-    _selectedImage = image;
     print('Image we got is ${image}');
 
     var tempDir = await getTemporaryDirectory();
     tempDir = await tempDir.createTemp('compressed');
-    File newFile = File('${tempDir.path}/${p.basename(image.path)}');
-    compressImage(image, newFile);
+    File compressedFile = File('${tempDir.path}/${p.basename(image.path)}');
+    await compressImage(image, compressedFile);
+    _selectedImage = compressedFile;
     num sno;
     if (imageSno.length <= index) {
       sno = imageSno.length;
