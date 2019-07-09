@@ -19,6 +19,7 @@ class ViewImage extends StatelessWidget {
       indices.add(i);
     }
     return Scaffold(
+
       backgroundColor: Colors.grey[300],
       body: Container(
         child: Center(

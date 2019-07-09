@@ -36,12 +36,7 @@ class _ChangePasswordPageState extends State<ChangePasswordScreen> {
         backgroundColor: consta.color1,
         elevation: 0,
         actions: <Widget>[
-          IconButton(
-              icon: Image.asset(
-                "assets/icons/logout.png",
-                color: Color.fromRGBO(255, 255, 255, 1),
-              ),
-              onPressed: null)
+
         ],
       ),
       resizeToAvoidBottomPadding: true,

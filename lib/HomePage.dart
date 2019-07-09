@@ -16,6 +16,7 @@ Station _currStation;
 
 //TODO: App bar station name size constraint check if scalable
 class HomePage extends StatefulWidget {
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -46,17 +47,13 @@ class _HomePageState extends State<HomePage> {
               }));
             },
             child: Center(
-                child: Text(
-              'Change Password',
-            )),
+                child: IconButton(icon:Icon(Icons.lock_open,size: 30,color: consta.color3,), onPressed: null)),
           ),
           IconButton(
-            icon: Image.asset(
-              "assets/icons/logout.png",
-              color: Color.fromRGBO(255, 255, 255, 1),
-            ),
+            icon: Icon(Icons.exit_to_app,size: 30,),padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
             onPressed: () => logout(),
           ),
+
         ],
       ),
       body: Container(
@@ -126,9 +123,9 @@ class _ContentState extends State<_Content> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-            ),
+        //    Container(
+        //      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+        //    ),
             Container(
                 padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
                 color: Color.fromRGBO(255, 255, 255, 1),
@@ -139,20 +136,24 @@ class _ContentState extends State<_Content> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      Center(
-                          child: Text(
-                        (_currStation?.stnCode) ?? '      ',
-                        style: TextStyle(
-                            color: consta.color1,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
-                      )),
+                      Container(
+                        width: 80,
+                        child: Center(
+
+                            child: Text(
+                          (_currStation?.stnCode) ?? '      ',
+                          style: TextStyle(
+                              color: consta.color1,
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold),
+                        )),
+                      ),
                       VerticalDivider(
                           indent: 0, width: 15, color: consta.color2),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 5),
-                        width: 220,
-                        child: DropdownButton<Station>(
+                        width: 200,
+                        child: DropdownButton<Station>(isExpanded: true,
                           onChanged: (selectedStation) {
                             setState(
                               () {
@@ -161,12 +162,17 @@ class _ContentState extends State<_Content> {
                               },
                             );
                           },
-                          iconSize: 40,
+                          iconSize: 30,
                           iconDisabledColor: consta.color1,
                           iconEnabledColor: consta.color2,
-                          hint: Text(
-                            'Select a Station',
-                            softWrap: true,
+                          hint: Container(
+                            width: 100,
+
+
+                            child: Text(
+                              'Select a Station',
+
+                            ),
                           ),
                           value: _currStation,
                           style: TextStyle(

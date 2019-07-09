@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import 'network.dart';
+import 'package:rail_lens/sizeconfig.dart';
 import 'package:flutter/material.dart';
 import 'application_bloc.dart';
 import 'bloc_provider.dart';
@@ -141,8 +142,8 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
   }
 
   Widget _confirmationUI() {
-    double imageHeight = 80;
-    double imageWidth = 80;
+    double imageHeight = sizeconfig.blockSizeVertical*20;
+    double imageWidth = sizeconfig.blockSizeHorizontal*20;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -168,7 +169,9 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
           ],
         ),
         RaisedButton(
+
           onPressed: () => _selectDate(context),
+          color: consta.color1,
           child: Text(_selectedDate.toLocal().toString().substring(0,10)),
         ),
         RaisedButton(
