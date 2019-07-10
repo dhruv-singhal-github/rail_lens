@@ -5,8 +5,9 @@ import 'package:rail_lens/consta.dart';
 class ViewImage extends StatelessWidget {
   List<Image> FullImage;
   int index;
+  var doaminname;
   var indices = new List();
-  ViewImage(this.FullImage, this.index);
+  ViewImage(this.FullImage, this.index,this.doaminname);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,15 @@ class ViewImage extends StatelessWidget {
       indices.add(i);
     }
     return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[],
+        backgroundColor:Colors.grey[300],
+        title: Text(doaminname,style: TextStyle(color: consta.color1),),
+        elevation: 0,
+        iconTheme: IconThemeData(color: consta.color1),
 
+        
+      ),
       backgroundColor: Colors.grey[300],
       body: Container(
         child: Center(

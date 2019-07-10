@@ -46,11 +46,13 @@ class Gallery extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return GalleryState();
+    return GalleryState(imageDomain);
   }
 }
 
 class GalleryState extends State<Gallery> {
+  var imagedomain;
+  GalleryState(this.imagedomain);
   List<Image> fullImage = new List();
   List<Image> thumbnailImage = new List();
   List<num> imageSno = new List();
@@ -177,18 +179,18 @@ class GalleryState extends State<Gallery> {
                                 snapshot.data.photos[0].date,
                                 fullImage,
                                 0,
-                                getImageFromUser)
+                                getImageFromUser,imagedomain)
                             : ImageContainer(((defaultImage)), defaultDate,
-                                fullImage, 0, getImageFromUser),
+                                fullImage, 0, getImageFromUser,imagedomain),
                         snapshot.data.photos.length >= 2
                             ? ImageContainer(
                                 thumbnailImage[1],
                                 snapshot.data.photos[1].date,
                                 fullImage,
                                 1,
-                                getImageFromUser)
+                                getImageFromUser,imagedomain)
                             : ImageContainer(((defaultImage)), defaultDate,
-                                fullImage, 1, getImageFromUser)
+                                fullImage, 1, getImageFromUser,imagedomain)
                       ],
                     ),
                     Row(
@@ -201,18 +203,18 @@ class GalleryState extends State<Gallery> {
                                 snapshot.data.photos[2].date,
                                 fullImage,
                                 2,
-                                getImageFromUser)
+                                getImageFromUser,imagedomain)
                             : ImageContainer(((defaultImage)), defaultDate,
-                                fullImage, 2, getImageFromUser),
+                                fullImage, 2, getImageFromUser,imagedomain),
                         snapshot.data.photos.length >= 4
                             ? ImageContainer(
                                 thumbnailImage[3],
                                 snapshot.data.photos[3].date,
                                 fullImage,
                                 3,
-                                getImageFromUser)
+                                getImageFromUser,imagedomain)
                             : ImageContainer(((defaultImage)), defaultDate,
-                                fullImage, 3, getImageFromUser)
+                                fullImage, 3, getImageFromUser,imagedomain)
                       ],
                     ),
                     Row(
@@ -225,18 +227,18 @@ class GalleryState extends State<Gallery> {
                                 snapshot.data.photos[4].date,
                                 fullImage,
                                 4,
-                                getImageFromUser)
+                                getImageFromUser,imagedomain)
                             : ImageContainer(((defaultImage)), defaultDate,
-                                fullImage, 4, getImageFromUser),
+                                fullImage, 4, getImageFromUser,imagedomain),
                         snapshot.data.photos.length >= 6
                             ? ImageContainer(
                                 thumbnailImage[5],
                                 snapshot.data.photos[5].date,
                                 fullImage,
                                 5,
-                                getImageFromUser)
+                                getImageFromUser,imagedomain)
                             : ImageContainer(((defaultImage)), defaultDate,
-                                fullImage, 5, getImageFromUser)
+                                fullImage, 5, getImageFromUser,imagedomain)
                       ],
                     )
                   ],
@@ -305,20 +307,20 @@ class GalleryState extends State<Gallery> {
 }
 
 class ImageContainer extends StatefulWidget {
-  final pic, date, fullImage, index, getImageFromUser;
+  final pic, date, fullImage, index, getImageFromUser, imagedomain;
   ImageContainer(
-      this.pic, this.date, this.fullImage, this.index, this.getImageFromUser);
+      this.pic, this.date, this.fullImage, this.index, this.getImageFromUser,this.imagedomain);
   @override
   _ImageContainerState createState() =>
-      _ImageContainerState(pic, date, fullImage, index, getImageFromUser);
+      _ImageContainerState(pic, date, fullImage, index, getImageFromUser,imagedomain);
 }
 
 class _ImageContainerState extends State<ImageContainer> {
-  var pic, date, index;
+  var pic, date, index,imagedoamin;
   List<Image> fullImage;
   Function(bool isCamera, Image prevImage, int index) getImageFromUser;
   _ImageContainerState(
-      this.pic, this.date, this.fullImage, this.index, this.getImageFromUser);
+      this.pic, this.date, this.fullImage, this.index, this.getImageFromUser,this.imagedoamin);
 
   @override
   Widget build(BuildContext context) {
@@ -339,7 +341,7 @@ class _ImageContainerState extends State<ImageContainer> {
               onTap: () {
                 print(date);
                 Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (context) => ViewImage(fullImage, index)));
+                    builder: (context) => ViewImage(fullImage, index,imagedoamin)));
               },
               child: DottedBorder(
                   color: consta.color2, gap: 3, strokeWidth: 2.5, child: pic
@@ -393,14 +395,24 @@ class _ImageContainerState extends State<ImageContainer> {
           return Container(
             child: new Wrap(
               children: <Widget>[
-                new ListTile(
-                    leading: new Icon(Icons.folder),
-                    title: new Text('Gallery'),
-                    onTap: () => {getImageFromUser(false, pic, index)}),
-                new ListTile(
-                  leading: new Icon(Icons.videocam),
-                  title: new Text('Camera'),
-                  onTap: () => {getImageFromUser(true, pic, index)},
+                
+                Center(
+                  child: IconButton(icon: Icon(Icons.cancel,size: 35,color: consta.color2,), onPressed: null),
+                  
+                )
+                ,
+                Center(
+                  child: new ListTile(
+                      leading: new Icon(Icons.folder,color: consta.color1,size: 35,),
+                      title: new Text('Gallery',style: TextStyle(color: consta.color2),),
+                      onTap: () => {getImageFromUser(false, pic, index)}),
+                ),
+                Center(
+                  child: new ListTile(
+                    leading: new Icon(Icons.videocam,color: consta.color1,size: 35,),
+                    title: new Text('Camera',style: TextStyle(color: consta.color2),),
+                    onTap: () => {getImageFromUser(true, pic, index)},
+                  ),
                 ),
               ],
             ),

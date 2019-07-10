@@ -94,9 +94,8 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
   @override
   Widget build(BuildContext context) {
     print('File to upload is ${widget.newImage}');
-    return SizedBox(
-      width: 500,
-      height: 500,
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
       child: Center(
         child: _uiState == 0
             ? _confirmationUI()
@@ -142,14 +141,14 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
   }
 
   Widget _confirmationUI() {
-    double imageHeight = sizeconfig.blockSizeVertical*20;
-    double imageWidth = sizeconfig.blockSizeHorizontal*20;
+    double imageHeight = sizeconfig.blockSizeHorizontal * 30;
+    double imageWidth = sizeconfig.blockSizeHorizontal * 25;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Row(
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(
               width: imageWidth,
@@ -157,9 +156,12 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
               child: widget.prevImage,
             ),
             SizedBox(
-              width: 100,
-              height: 100,
-              child: Icon(Icons.arrow_forward),
+              width: 20,
+              height: 20,
+              child: Icon(
+                Icons.arrow_forward,
+                size: 30,
+              ),
             ),
             SizedBox(
               width: imageWidth,
@@ -169,14 +171,17 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
           ],
         ),
         RaisedButton(
-
           onPressed: () => _selectDate(context),
           color: consta.color1,
-          child: Text(_selectedDate.toLocal().toString().substring(0,10)),
+          child: Text(_selectedDate.toLocal().toString().substring(0, 10)),
         ),
-        RaisedButton(
-          onPressed: () => _confirmUpload(),
-          child: Text('Confirm'),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            RaisedButton(
+                onPressed: () => _confirmUpload(), child: Text('Confirm')),
+            RaisedButton(
+                onPressed: () => Navigator.of(context).pop(null), child: Text('Cancel')),
+          ],
         )
       ],
     );
@@ -219,9 +224,9 @@ class ChangeImageState extends State<ChangeImageConfirmation> {
               stream: val,
               builder: (_, snap) {
                 if (snap.hasData) {
-                  return Text('snap has ${snap.data}');
+                  return Text('Upload Successful');
                 } else
-                  return Text('snap dont have shit');
+                  return Text('Try Again');
               },
             );
           } else {
