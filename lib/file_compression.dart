@@ -4,7 +4,7 @@ import 'package:image/image.dart' as impkg;
 import 'dart:async';
 
 const _imageSizeLimit = 500000;
-const int _jpgQuality = 90;
+const int _jpgQuality = 100;
 
 
 //Use the function below to call compressImageFile
