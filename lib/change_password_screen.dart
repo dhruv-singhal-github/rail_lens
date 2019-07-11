@@ -138,6 +138,7 @@ class _ChangePasswordPageState extends State<ChangePasswordScreen> {
         ChangePasswordBloc bloc = Provider.of<ChangePasswordBloc>(this.context);
         Provider.of<ApplicationBloc>(this.context)
             .storePassword(bloc.lastPassword);
+        print('Stored last password! ${bloc.lastPassword}');
         final page = HomePage();
         _openPage(page);
       } else {

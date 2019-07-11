@@ -199,7 +199,8 @@ class ChangePasswordBloc extends BaseBloc with Validator {
       _confirmPasswordController.sink.add;
 
   Future<Map<String, String>> _credentialMap(List passList) async{
-    _lastPassword = passList[0];
+    _lastPassword = passList[1];
+    print('Set last password! It is now $_lastPassword');
     var credMap = Map<String, String>();
     credMap['username'] = await _usernameFuture;
     credMap['oldpass'] = passList[0];

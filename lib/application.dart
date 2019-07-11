@@ -98,6 +98,8 @@ class ApplicationState extends State<ApplicationStateManager> {
   print('Handle onIsLoggedInError');
   print('Error is $error');
   print('Stacktrace is $trace');
+  _bloc.logout();
+  _openPage(buildLoginPage());
   }
 }
 
